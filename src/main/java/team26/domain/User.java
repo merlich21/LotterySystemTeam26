@@ -1,4 +1,11 @@
 package team26.domain;
 
-public class User {
-}
+import java.time.OffsetDateTime;
+
+public record User(
+        int id,
+        String username,
+        String hashedPassword,
+        UserRole role,
+        OffsetDateTime createdAt
+) {}

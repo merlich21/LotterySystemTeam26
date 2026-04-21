@@ -1,6 +1,6 @@
 package team26.domain;
 
-public enum Status {
+public enum TicketStatus {
     WIN,
     LOSE,
     PENDING

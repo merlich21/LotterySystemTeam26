@@ -1,6 +1,6 @@
 package team26.domain;
 
-public enum Role {
+public enum UserRole {
     USER,
     ADMIN
 }
