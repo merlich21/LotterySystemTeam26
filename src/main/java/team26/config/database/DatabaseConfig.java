@@ -1,4 +1,4 @@
-package team26.config.database.database;
+package team26.config.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

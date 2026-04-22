@@ -1,6 +1,6 @@
 package team26;
 
-import team26.config.database.database.DatabaseConfig;
+import team26.config.database.DatabaseConfig;
 
 import java.sql.Connection;
 
