@@ -1,5 +1,4 @@
 # LotterySystemTeam26
-123
 Team project (Java practice)
 ## Объём реализации ## 
 
