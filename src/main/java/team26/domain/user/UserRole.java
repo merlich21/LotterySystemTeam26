@@ -1,4 +1,4 @@
-package team26.domain;
+package team26.domain.user;
 
 public enum UserRole {
     USER,
