@@ -1,7 +1,7 @@
 ## Инструкции по работе
 
-**run-db.bat** - скрипт Windows запуска БД PostgreSQL в контейнере
-**run-db.sh** - скрипт Linux запуска БД PostgreSQL в контейнере
+- **run-db.bat** - скрипт Windows запуска БД PostgreSQL в контейнере
+- **run-db.sh** - скрипт Linux запуска БД PostgreSQL в контейнере
 
 ## Что делает скрипт?
 - Удаляет старые образ и контейнер
