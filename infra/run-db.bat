@@ -19,7 +19,7 @@ if /i "!script_path!"=="%cd%" (
     echo .
     echo The 'hackathon_postgres' image should be built
     echo .
-    docker run --name hackathon_postgres -p 5432:5432 -e POSTGRES_PASSWORD=!password! -v postgres_data:/var/lib/postgresql/18/docker -v postgres_main:/var/lib/postgresql -d hackathon_postgres:latest
+    docker run --name hackathon_postgres -p 7432:5432 -e POSTGRES_PASSWORD=!password! -e POSTGRES_DB=testDB -v postgres_data:/var/lib/postgresql/18/docker -v postgres_main:/var/lib/postgresql -d hackathon_postgres:latest
     echo .
     echo _____INFORMATION:_____
     echo .
