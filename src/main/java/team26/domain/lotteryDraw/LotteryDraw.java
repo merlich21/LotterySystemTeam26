@@ -1,19 +1,24 @@
-package team26.domain.draw;
+package team26.domain.lotteryDraw;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
-import team26.domain.user.UserRole;
+import team26.domain.lotteryTicket.LotteryTicket;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "lottery_draws")
-public class Draw {
+public class LotteryDraw {
 
+    @Getter
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @JdbcTypeCode(SqlTypes.UUID)
@@ -25,6 +30,7 @@ public class Draw {
     )
     private UUID id;
 
+    @Getter
     @Column(
             name = "draw_number",
             nullable = false,
@@ -35,26 +41,33 @@ public class Draw {
     )
     private Integer drawNumber;
 
+    @Getter
+    @Setter
     @Column(
             name = "draw_name",
             length = 100
     )
     private String drawName;
 
+    @Getter
+    @Setter
     @Column(
             name = "total_tickets",
             nullable = false
     )
     private Integer totalTickets = 0;
 
+    @Getter
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(
             name = "status",
             length = 20,
             nullable = false
     )
-    private DrawStatus status = DrawStatus.SCHEDULED;
+    private LotteryDrawStatus status = LotteryDrawStatus.SCHEDULED;
 
+    @Getter
     @CreationTimestamp
     @Column(
             name = "created_at",
@@ -64,45 +77,12 @@ public class Draw {
     )
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
-    protected Draw() {}
+    @OneToMany(mappedBy = "lotteryDraw", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LotteryTicket> lotteryTickets = new ArrayList<>();
 
-    protected Draw(String drawName) {
+    protected LotteryDraw() {}
+
+    public LotteryDraw(String drawName) {
         this.drawName = drawName;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public Integer getDrawNumber() {
-        return drawNumber;
-    }
-
-    public String getDrawName() {
-        return drawName;
-    }
-
-    public Integer getTotalTickets() {
-        return totalTickets;
-    }
-
-    public DrawStatus getStatus() {
-        return status;
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setDrawName(String drawName) {
-        this.drawName = drawName;
-    }
-
-    public void setTotalTickets(Integer totalTickets) {
-        this.totalTickets = totalTickets;
-    }
-
-    public void setStatus(DrawStatus status) {
-        this.status = status;
     }
 }

@@ -1,12 +1,12 @@
-package team26.domain.draw;
+package team26.domain.lotteryDraw;
 
 import java.time.OffsetDateTime;
 
-public record DrawRecord(
+public record LotteryDrawRecord(
         Integer id,
         Integer drawNumber,
         String drawName,
-        DrawStatus status,
+        LotteryDrawStatus status,
         Integer totalTickets,
         OffsetDateTime createdAt
 ) {}

@@ -32,12 +32,12 @@ CREATE INDEX idx_draws_number ON lottery_draws (draw_number);
 
 CREATE TABLE lottery_tickets
 (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id         UUID       NOT NULL,
-    lottery_draw_id UUID       NOT NULL,
-    status          VARCHAR(20)      default 'PENDING' CHECK ( status IN ('PENDING', 'WIN', 'LOSE') ),
-    ticket_numbers  INTEGER[5] NOT NULL,
-    created_at      TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,
+    id              UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
+    user_id         UUID        NOT NULL,
+    lottery_draw_id UUID        NOT NULL,
+    status          VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK ( status IN ('PENDING', 'WIN', 'LOSE') ),
+    ticket_numbers  INTEGER[5]  NOT NULL,
+    created_at      TIMESTAMP            DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_lottery_draw_id FOREIGN KEY (lottery_draw_id) REFERENCES lottery_draws (id) ON DELETE CASCADE,

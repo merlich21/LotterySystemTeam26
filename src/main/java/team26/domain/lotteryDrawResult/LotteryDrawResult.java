@@ -1,9 +1,9 @@
-package team26.domain.drawResult;
+package team26.domain.lotteryDrawResult;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-public record DrawResult(
+public record LotteryDrawResult(
         int drawId,
         List<Integer> winningNumbers,
         OffsetDateTime declaredAt
