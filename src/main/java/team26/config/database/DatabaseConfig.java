@@ -2,6 +2,7 @@ package team26.config.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import io.github.cdimascio.dotenv.Dotenv;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfoService;
 import org.flywaydb.core.api.output.MigrateResult;
@@ -12,10 +13,16 @@ public class DatabaseConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
     private static HikariDataSource dataSource;
+    private static Dotenv dotenv;
 
     public static void init() {
+        dotenv = Dotenv.configure()
+                .directory("./")
+                .ignoreIfMissing()
+                .load();
+
         HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(getEnv("DB_URL", "jdbc:postgresql://localhost:7432/testDB"));
+        hikariConfig.setJdbcUrl(getEnv("DB_URL", "jdbc:postgresql://localhost:7432/lottery_db"));
         hikariConfig.setUsername(getEnv("DB_USER_NAME", "postgres"));
         hikariConfig.setPassword(getEnv("DB_USER_PASSWORD", "postgres"));
         hikariConfig.setDriverClassName("org.postgresql.Driver");
@@ -53,11 +60,19 @@ public class DatabaseConfig {
     }
 
     private static String getEnv(String key, String defaultValue) {
-        String value = System.getenv(key);
+        String value = dotenv.get(key);
         if (value == null) {
             value = System.getProperty(key);
         }
         return value != null ? value : defaultValue;
+    }
+
+    private static String getEnv(String key) {
+        String value = dotenv.get(key);
+        if (value == null) {
+            value = System.getProperty(key);
+        }
+        return value;
     }
 
     public static HikariDataSource getDataSource() {
