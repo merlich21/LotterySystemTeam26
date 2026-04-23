@@ -18,12 +18,12 @@ CREATE INDEX idx_users_login ON users (login);
 
 CREATE TABLE lottery_draws
 (
-    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    draw_number   INTEGER NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY,
-    draw_name     VARCHAR(100)     DEFAULT null,
-    total_tickets INTEGER          DEFAULT 0,
-    status        VARCHAR(20)      DEFAULT 'SCHEDULED' CHECK (status IN ('SCHEDULED', 'ACTIVE', 'COMPLETED', 'CANCELLED')),
-    created_at    TIMESTAMP        DEFAULT current_timestamp
+    id            UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
+    draw_number   INTEGER     NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY,
+    draw_name     VARCHAR(100)         DEFAULT null,
+    total_tickets INTEGER     NOT NULL DEFAULT 0,
+    status        VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED' CHECK (status IN ('SCHEDULED', 'ACTIVE', 'COMPLETED', 'CANCELLED')),
+    created_at    TIMESTAMP            DEFAULT current_timestamp
 );
 
 CREATE INDEX idx_draws_status ON lottery_draws (status);
