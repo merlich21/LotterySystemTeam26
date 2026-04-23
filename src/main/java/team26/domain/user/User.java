@@ -1,6 +1,7 @@
 package team26.domain.user;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,6 +30,7 @@ public class User {
             nullable = false,
             columnDefinition = "UUID"
     )
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @Getter

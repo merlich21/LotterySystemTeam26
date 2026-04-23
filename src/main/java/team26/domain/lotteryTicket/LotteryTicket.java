@@ -1,6 +1,7 @@
 package team26.domain.lotteryTicket;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,9 +10,10 @@ import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 import team26.domain.lotteryDraw.LotteryDraw;
 import team26.domain.user.User;
+import team26.util.database.Helper;
 
 import java.time.OffsetDateTime;
-import java.util.Arrays;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -28,6 +30,7 @@ public class LotteryTicket {
             nullable = false,
             columnDefinition = "UUID DEFAULT gen_random_uuid()"
     )
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @Getter
@@ -82,38 +85,11 @@ public class LotteryTicket {
 
     public LotteryTicket(User user, LotteryDraw lotteryDraw, Integer[] ticketNumbers) {
         this.user = user;
-        this.lotteryDraw = lotteryDraw;
-        this.ticketNumbers = validateAndCopyNumbers(ticketNumbers);
+        this.lotteryDraw = Objects.requireNonNull(lotteryDraw, "Розыгрыш обязателен");
+        this.ticketNumbers = Helper.validateAndCopyNumbers(ticketNumbers);
     }
 
     public Integer[] getTicketNumbers() {
-        return ticketNumbers.clone();
-    }
-
-    private Integer[] validateAndCopyNumbers(Integer[] ticketNumbers) {
-        if (ticketNumbers == null) {
-            throw new IllegalArgumentException("Массив чисел не может быть null");
-        }
-
-        if (ticketNumbers.length != 5) {
-            throw new IllegalArgumentException("Должно быть ровно 5 чисел, получено: " + ticketNumbers.length);
-        }
-
-        for (Integer num : ticketNumbers) {
-            if (num == null) {
-                throw new IllegalArgumentException("Число не может быть null");
-            }
-
-            if (num < 1 || num > 45) {
-                throw new IllegalArgumentException("Число " + num + " вне диапазона 1-45");
-            }
-
-        }
-        long distinctCount = Arrays.stream(ticketNumbers).distinct().count();
-        if (distinctCount != 5) {
-            throw new IllegalArgumentException("Все числа должны быть уникальны");
-        }
-
         return ticketNumbers.clone();
     }
 }

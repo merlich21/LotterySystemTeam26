@@ -1,17 +1,21 @@
 package team26.domain.lotteryDraw;
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
+import team26.domain.lotteryDrawResult.LotteryDrawResult;
 import team26.domain.lotteryTicket.LotteryTicket;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Entity
@@ -28,6 +32,7 @@ public class LotteryDraw {
             nullable = false,
             columnDefinition = "UUID DEFAULT gen_random_uuid()"
     )
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @Getter
@@ -80,9 +85,22 @@ public class LotteryDraw {
     @OneToMany(mappedBy = "lotteryDraw", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LotteryTicket> lotteryTickets = new ArrayList<>();
 
-    protected LotteryDraw() {}
+    @OneToOne(mappedBy = "lotteryDraw", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private LotteryDrawResult lotteryDrawResult;
+
+    protected LotteryDraw() {
+    }
 
     public LotteryDraw(String drawName) {
         this.drawName = drawName;
+    }
+
+    public boolean hasResult() {
+        return lotteryDrawResult != null;
+    }
+
+    public Optional<LotteryDrawResult> getResultOptional() {
+        return Optional.ofNullable(lotteryDrawResult);
     }
 }
