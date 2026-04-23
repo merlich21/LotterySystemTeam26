@@ -1,14 +1,16 @@
 CREATE TABLE users
 (
-    id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name           VARCHAR(100) NOT NULL,
-    surname        VARCHAR(100) NOT NULL,
-    login          VARCHAR(50)  NOT NULL UNIQUE,
-    email          VARCHAR(255) NOT NULL UNIQUE,
-    phone          VARCHAR(12) CHECK (phone ~ '^[0-9]{12}$'),
-    role           VARCHAR(20)      DEFAULT 'USER' CHECK (role IN ('USER', 'ADMIN')),
-    hashedPassword VARCHAR(255) NOT NULL,
-    created_at     TIMESTAMP        DEFAULT CURRENT_TIMESTAMP
+    id              UUID PRIMARY KEY      DEFAULT gen_random_uuid(),
+    name            VARCHAR(100) NOT NULL,
+    surname         VARCHAR(100) NOT NULL,
+    login           VARCHAR(50)  NOT NULL UNIQUE,
+    email           VARCHAR(255) NOT NULL UNIQUE,
+    phone           VARCHAR(12) CHECK (phone ~ '^[0-9]{12}$') UNIQUE,
+    role            VARCHAR(20)           DEFAULT 'USER' CHECK (role IN ('USER', 'ADMIN')),
+    hashed_password VARCHAR(255) NOT NULL,
+    created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT check_email_valid CHECK ( email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' )
 );
 
 CREATE INDEX idx_users_email ON users (email);
@@ -18,7 +20,7 @@ CREATE TABLE lottery_draws
 (
     id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     draw_number   INTEGER NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY,
-    draw_name     VARCHAR(100) DEFAULT null,
+    draw_name     VARCHAR(100)     DEFAULT null,
     total_tickets INTEGER          DEFAULT 0,
     status        VARCHAR(20)      DEFAULT 'SCHEDULED' CHECK (status IN ('SCHEDULED', 'ACTIVE', 'COMPLETED', 'CANCELLED')),
     created_at    TIMESTAMP        DEFAULT current_timestamp
@@ -57,8 +59,8 @@ CREATE TABLE lottery_tickets
         ticket_numbers[3] != ticket_numbers[4] AND
         ticket_numbers[3] != ticket_numbers[5] AND
         ticket_numbers[4] != ticket_numbers[5]
-)
-    );
+        )
+);
 
 CREATE INDEX idx_tickets_user ON lottery_tickets (user_id);
 CREATE INDEX idx_tickets_lottery_draw ON lottery_tickets (lottery_draw_id);
@@ -68,7 +70,7 @@ CREATE OR REPLACE FUNCTION generate_lottery_numbers()
     RETURNS INTEGER[] AS
 $$
 DECLARE
-result   INTEGER[] := ARRAY []::INTEGER[];
+    result   INTEGER[] := ARRAY []::INTEGER[];
     next_num INTEGER;
 BEGIN
     WHILE COALESCE(array_length(result, 1), 0) < 5
@@ -77,10 +79,10 @@ BEGIN
 
             IF NOT next_num = ANY (result) THEN
                 result := array_append(result, next_num);
-END IF;
-END LOOP;
+            END IF;
+        END LOOP;
 
-RETURN result;
+    RETURN result;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -110,8 +112,8 @@ CREATE TABLE lottery_draws_result
         result_numbers[3] != result_numbers[4] AND
         result_numbers[3] != result_numbers[5] AND
         result_numbers[4] != result_numbers[5]
-)
-    );
+        )
+);
 
 CREATE INDEX idx_lottery_draws_id ON lottery_draws_result (lottery_draw_id);
 
