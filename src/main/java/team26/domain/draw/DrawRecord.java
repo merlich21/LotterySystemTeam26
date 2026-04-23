@@ -3,11 +3,10 @@ package team26.domain.draw;
 import java.time.OffsetDateTime;
 
 public record DrawRecord(
-        int id,
-        String title,
+        Integer id,
+        Integer drawNumber,
+        String drawName,
         DrawStatus status,
-        int numbersCount,
-        int maxNumber,
-        int createdBy,
+        Integer totalTickets,
         OffsetDateTime createdAt
 ) {}
