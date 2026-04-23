@@ -7,6 +7,8 @@
     <groupId>team26</groupId>
     <artifactId>LotterySystemTeam26</artifactId>
     <version>1.0</version>
+    <url>http://maven.apache.org</url>
+
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -49,7 +51,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 
     <dependencies>
 
@@ -113,6 +114,14 @@
     </dependencies>
 
     <build>
+        <!-- Стандартные директории (по умолчанию src/main/java и src/main/resources) -->
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
