@@ -1,4 +1,4 @@
-package team26.config;
+package team26.config.api;
 
 import io.javalin.Javalin;
 import team26.api.ApiRoutes;
