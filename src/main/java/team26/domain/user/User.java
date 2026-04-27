@@ -1,6 +1,7 @@
 package team26.domain.user;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,8 +19,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 public class User {
-
     @Getter
+    @Setter
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @JdbcTypeCode(SqlTypes.UUID)
@@ -99,6 +100,7 @@ public class User {
     private String hashedPassword;
 
     @Getter
+    @Setter
     @CreationTimestamp
     @Column(
             name = "created_at",
@@ -111,7 +113,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LotteryTicket> lotteryTickets = new ArrayList<>();
 
-    protected User() {
+    public User() {
     }
 
     public User(String name, String surname, String login,

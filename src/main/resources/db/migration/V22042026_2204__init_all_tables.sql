@@ -5,7 +5,7 @@ CREATE TABLE users
     surname         VARCHAR(100) NOT NULL,
     login           VARCHAR(50)  NOT NULL UNIQUE,
     email           VARCHAR(255) NOT NULL UNIQUE,
-    phone           VARCHAR(12) CHECK (phone ~ '^[0-9]{12}$') UNIQUE,
+    phone           VARCHAR(12) CHECK (phone ~ '^[0-9]{11,12}$') UNIQUE,
     role            VARCHAR(20)           DEFAULT 'USER' CHECK (role IN ('USER', 'ADMIN')),
     hashed_password VARCHAR(255) NOT NULL,
     created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
