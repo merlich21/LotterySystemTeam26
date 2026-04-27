@@ -1,0 +1,5 @@
+# FROM dhi.io/postgres:18.3-alpine3.22-dev
+FROM postgres:18.3-alpine
+VOLUME /var/lib/postgresql/18/docker /var/lib/postgresql
+EXPOSE 7432
+ENTRYPOINT ["docker-entrypoint.sh", "postgres"]

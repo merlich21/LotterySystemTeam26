@@ -6,13 +6,16 @@
 
     <groupId>team26</groupId>
     <artifactId>LotterySystemTeam26</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <url>http://maven.apache.org</url>
+
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <flyway.version>12.1.1</flyway.version>
+        <lombok.version>1.18.42</lombok.version>
     </properties>
 
     <dependencyManagement>
@@ -37,10 +40,20 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>2.0.17</version>
+            </dependency>
+            <dependency>
                 <groupId>io.javalin</groupId>
                 <artifactId>javalin</artifactId>
-                <version>7.2.0</version>
+                <version>6.7.0</version>
                 <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.orm</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>6.5.2.Final</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -56,7 +69,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>5.1.0</version>
+            <version>6.2.1</version>
         </dependency>
 
         <!-- Source: https://mvnrepository.com/artifact/org.flywaydb/flyway-core -->
@@ -93,6 +106,39 @@
             <artifactId>slf4j-simple</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.32</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.2.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -105,11 +151,24 @@
         </resources>
 
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.15.0</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -118,6 +177,7 @@
                     <runOrder>priority</runOrder> <!-- Сначала важные тесты -->
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -131,6 +191,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -139,6 +200,7 @@
                     <mainClass>team26.Application</mainClass>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -152,18 +214,44 @@
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>team26.Application</mainClass>
                                 </transformer>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-        </plugins>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>${flyway.version}</version>
+                <configuration>
+                    <url>${DB_URL}</url>
+                    <user>${DB_USER_NAME}</user>
+                    <password>${DB_USER_PASSWORD}</password>
+                    <locations>
+                        <location>filesystem:src/main/resources/db/migration</location>
+                    </locations>
+                    <baselineOnMigrate>true</baselineOnMigrate>
+                    <validateOnMigrate>true</validateOnMigrate>
+                    <baselineVersion>1</baselineVersion>
+                    <cleanDisabled>false</cleanDisabled>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.flywaydb</groupId>
+                        <artifactId>flyway-database-postgresql</artifactId>
+                        <version>${flyway.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 
+        </plugins>
     </build>
 
 </project>
