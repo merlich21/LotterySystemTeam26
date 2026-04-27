@@ -1,10 +1,13 @@
 package team26.repository.user;
 
+import lombok.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import team26.config.database.DatabaseConfig;
 import team26.domain.user.User;
 import team26.domain.user.UserRole;
+import team26.repository.user.enums.UserExistsField;
+import team26.repository.user.enums.UserSearchField;
 import team26.util.database.ConverterData;
 
 import javax.sql.DataSource;
@@ -60,62 +63,186 @@ public class JdbcUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findByLogin(String login) {
-        String sql = """
-                  SELECT * FROM users WHERE login = ?
-                """;
-
-        try (Connection conn = dataSource.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql);
-        ) {
-            stmt.setString(1, login);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return Optional.of(ConverterData.convertDataToUser(rs));
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        if (login == null) return Optional.empty();
+        return findByField(login, UserSearchField.LOGIN);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return Optional.empty();
+        if (email == null) return Optional.empty();
+        return findByField(email, UserSearchField.EMAIL);
     }
 
     @Override
     public Optional<User> findById(UUID id) {
+        if (id == null) return Optional.empty();
+        String sql = "SELECT * FROM users WHERE id"  + " = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+        ) {
+            stmt.setObject(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    logger.info("User found: {}", id);
+                    return Optional.of(ConverterData.convertDataToUser(rs));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error getting user: {}", id, e);
+            throw new RuntimeException("Failed to find user", e);
+        }
         return Optional.empty();
     }
 
     @Override
-    public List<User> findAll() {
-        return List.of();
+    public List<User> findAllByRole(UserRole role) {
+        String sql = "SELECT * FROM users where role = ?;";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+        ) {
+            stmt.setString(1, role.name());
+            try (ResultSet rs = stmt.executeQuery()) {
+                return ConverterData.convertDataToAllUsers(rs);
+            }
+        } catch (SQLException e) {
+            logger.error("Error getting users by role: {}", e);
+            throw new RuntimeException("Failed to find users by role", e);
+        }
     }
 
     @Override
-    public List<User> findAllByRole(UserRole role) {
-        return List.of();
+    public List<User> findAll() {
+        String sql = "SELECT * FROM users;";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+        ) {
+            try (ResultSet rs = stmt.executeQuery()) {
+                return ConverterData.convertDataToAllUsers(rs);
+            }
+        } catch (SQLException e) {
+            logger.error("Error getting all users: {}", e);
+            throw new RuntimeException("Failed to find all users", e);
+        }
     }
 
     @Override
     public User update(User user) {
-        return null;
+        String sql = """
+                UPDATE users
+                SET name = ?, surname = ?, login = ?, email = ?, phone = ?, role = ?, hashed_password = ?
+                WHERE id = ?
+                """;
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+        ) {
+            stmt.setString(1, user.getName());
+            stmt.setString(2, user.getSurname());
+            stmt.setString(3, user.getLogin());
+            stmt.setString(4, user.getEmail());
+            stmt.setString(5, user.getPhone());
+            stmt.setString(6, user.getRole().name());
+            stmt.setString(7, user.getHashedPassword());
+            stmt.setObject(8, user.getId());
+
+            int updated = stmt.executeUpdate();
+            if (updated == 0) {
+                throw new RuntimeException("User not found for update: " + user.getId());
+            }
+
+            logger.info("User updated: {}", user.getId());
+        } catch (SQLException e) {
+            logger.error("Error updating user: {}", user.getId(), e);
+            throw new RuntimeException("Failed to update user", e);
+        }
+
+        return user;
     }
 
     @Override
-    public void delete(User user) {
+    public void delete(UUID userId) {
+        String sql = """
+                 DELETE FROM users WHERE id = ?;
+                """;
 
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)
+        ) {
+            stmt.setObject(1, userId);
+
+            int deleted = stmt.executeUpdate();
+            if (deleted == 0) {
+                throw new RuntimeException("User not found for delete: " + userId);
+            }
+            logger.info("User deleted: {}", userId);
+        } catch (SQLException e) {
+            logger.error("Error deleting user: {}", userId, e);
+            throw new RuntimeException("Failed to delete user", e);
+        }
     }
 
     @Override
     public boolean existsByLogin(String login) {
-        return false;
+        if (login == null) return false;
+        return existsByField(login, UserExistsField.LOGIN);
     }
 
     @Override
     public boolean existsByEmail(String email) {
+        if (email == null) return false;
+        return existsByField(email, UserExistsField.EMAIL);
+    }
+
+    @Override
+    public boolean existsByPhone(String phone) {
+        if (phone == null) return false;
+        return existsByField(phone, UserExistsField.PHONE);
+    }
+
+    private Optional<User> findByField(String value, UserSearchField field) {
+        String sql = "SELECT * FROM users WHERE " + field.getColumnName() + " = ?";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+        ) {
+            stmt.setString(1, value);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    logger.info("User found: {}", value);
+                    return Optional.of(ConverterData.convertDataToUser(rs));
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error getting user: {}", value, e);
+            throw new RuntimeException("Failed to find user", e);
+        }
+        return Optional.empty();
+    }
+
+    private boolean existsByField(String value, UserExistsField field) {
+        String sql = "SELECT EXISTS(SELECT 1 FROM users WHERE " + field.getColumnName() + " = ?)";
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+        ) {
+            stmt.setString(1, value);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    boolean result = rs.getBoolean(1);
+                    logger.info("User is exists by " + field + " " + value + ": " + result, result);
+                    return result;
+                }
+            }
+        } catch (SQLException e) {
+            logger.error("Error exists user: {}", value, e);
+            throw new RuntimeException("Failed to find user", e);
+        }
+
         return false;
     }
 }

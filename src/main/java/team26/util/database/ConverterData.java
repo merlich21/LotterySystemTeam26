@@ -6,6 +6,8 @@ import team26.domain.user.UserRole;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class ConverterData {
@@ -22,6 +24,16 @@ public class ConverterData {
         user.setHashedPassword(rs.getString("hashed_password"));
         user.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
         return user;
+    }
+
+    public static List<User> convertDataToAllUsers(ResultSet rs) throws SQLException {
+        List<User> users = new ArrayList<>();
+
+        while (rs.next()) {
+            users.add(ConverterData.convertDataToUser(rs));
+        }
+
+        return users;
     }
 
 }

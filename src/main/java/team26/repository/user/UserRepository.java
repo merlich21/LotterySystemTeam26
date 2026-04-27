@@ -22,9 +22,10 @@ public interface UserRepository {
     User update(User user);
 
     // DELETE
-    void delete(User user);
+    void delete(UUID id);
 
     // EXISTS
     boolean existsByLogin(String login);
     boolean existsByEmail(String email);
+    boolean existsByPhone(String phone);
 }

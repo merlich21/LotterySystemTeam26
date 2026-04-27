@@ -3,9 +3,12 @@ package team26;
 
 import team26.config.database.DatabaseConfig;
 import team26.domain.user.User;
+import team26.domain.user.UserRole;
 import team26.repository.user.JdbcUserRepository;
 
 import java.sql.Connection;
+import java.util.List;
+import java.util.Optional;
 
 public class Application {
     public static void main(String[] args) {
@@ -25,10 +28,17 @@ public class Application {
             }));
 
             JdbcUserRepository userRepository = new JdbcUserRepository();
-            User res = userRepository.save(new User("testName3", "testSUrname3", "testLogin3", "testEmail3@gmail.com", null, "hashedPass"));
+//            Optional<User> user = userRepository.findByLogin("testLogin1");
+//            if (user.isPresent()) {
+//                User resUser = user.get();
+//            }
+//                List<User> list = userRepository.findAllByRole(UserRole.USER);
+//
+//                System.out.println("User is exists by " + "phone" + " " + "null" + ": " + list);
+//            resUser.setName("Tima");
+//            User res = userRepository.save(new User("testName3", "testSUrname3", "testLogin3", "testEmail3@gmail.com", null, "hashedPass"));
 
-            System.out.println(res.getLogin());
-            System.out.println(res.getId());
+
         } catch (Exception e) {
             System.err.println("Failed to initialize database: " + e.getMessage());
             e.printStackTrace();
