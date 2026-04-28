@@ -12,6 +12,7 @@ public interface LotteryTicketsRepository {
     // CREATE
     LotteryTicket save(LotteryTicket lotteryTicket);
 
+
     // READ
     Optional<LotteryTicket> findById(UUID id);
     List<LotteryTicket> findByUserId(UUID userId);
