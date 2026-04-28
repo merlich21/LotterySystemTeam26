@@ -23,6 +23,7 @@ import java.util.UUID;
 public class LotteryDraw {
 
     @Getter
+    @Setter
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @JdbcTypeCode(SqlTypes.UUID)
@@ -36,6 +37,7 @@ public class LotteryDraw {
     private UUID id;
 
     @Getter
+    @Setter
     @Column(
             name = "draw_number",
             nullable = false,
@@ -73,6 +75,7 @@ public class LotteryDraw {
     private LotteryDrawStatus status = LotteryDrawStatus.SCHEDULED;
 
     @Getter
+    @Setter
     @CreationTimestamp
     @Column(
             name = "created_at",
@@ -89,7 +92,7 @@ public class LotteryDraw {
     @ToString.Exclude
     private LotteryDrawResult lotteryDrawResult;
 
-    protected LotteryDraw() {
+    public LotteryDraw() {
     }
 
     public LotteryDraw(String drawName) {

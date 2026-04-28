@@ -1,5 +1,7 @@
 package team26.util.database;
 
+import team26.domain.lotteryDraw.LotteryDraw;
+import team26.domain.lotteryDraw.LotteryDrawStatus;
 import team26.domain.user.User;
 import team26.domain.user.UserRole;
 
@@ -34,6 +36,17 @@ public class ConverterData {
         }
 
         return users;
+    }
+
+    public static LotteryDraw convertDataToLotteryDraw(ResultSet rs) throws SQLException {
+        LotteryDraw draw = new LotteryDraw();
+        draw.setId(rs.getObject("id", UUID.class));
+        draw.setDrawNumber(rs.getInt("draw_number"));
+        draw.setDrawName(rs.getString("draw_name"));
+        draw.setTotalTickets(rs.getInt("total_tickets"));
+        draw.setStatus(LotteryDrawStatus.valueOf(rs.getString("status")));
+        draw.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
+        return draw;
     }
 
 }
