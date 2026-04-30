@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
@@ -18,6 +19,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "lottery_draws_result")
 public class LotteryDrawResult {
+
+    @Setter
+    @Getter
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @JdbcTypeCode(SqlTypes.UUID)
@@ -30,6 +34,7 @@ public class LotteryDrawResult {
     @EqualsAndHashCode.Include
     private UUID id;
 
+    @Setter
     @Getter
     @Column(
             name = "result_numbers",
@@ -39,6 +44,7 @@ public class LotteryDrawResult {
     @JdbcTypeCode(SqlTypes.ARRAY)
     private Integer[] resultNumbers;
 
+    @Setter
     @Getter
     @CreationTimestamp
     @Column(
@@ -49,6 +55,7 @@ public class LotteryDrawResult {
     )
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
+    @Getter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "lottery_draw_id",
@@ -58,7 +65,7 @@ public class LotteryDrawResult {
     )
     private LotteryDraw lotteryDraw;
 
-    protected LotteryDrawResult() {
+    public LotteryDrawResult() {
     }
 
     @Builder

@@ -13,7 +13,6 @@ public interface UserRepository {
 
     // READ
     Optional<User> findByLogin(String login);
-    Optional<User> findByEmail(String email);
     Optional<User> findById(UUID id);
     List<User> findAll();
     List<User> findAllByRole(UserRole role);
@@ -26,6 +25,4 @@ public interface UserRepository {
 
     // EXISTS
     boolean existsByLogin(String login);
-    boolean existsByEmail(String email);
-    boolean existsByPhone(String phone);
 }

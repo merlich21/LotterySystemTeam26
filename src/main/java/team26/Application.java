@@ -4,9 +4,13 @@ package team26;
 import team26.config.database.DatabaseConfig;
 import team26.domain.lotteryDraw.LotteryDraw;
 import team26.domain.lotteryDraw.LotteryDrawStatus;
+import team26.domain.lotteryDrawResult.LotteryDrawResult;
+import team26.domain.lotteryTicket.LotteryTicket;
 import team26.domain.user.User;
 import team26.domain.user.UserRole;
 import team26.repository.lotteryDraw.JdbcLotteryDrawRepository;
+import team26.repository.lotteryDrawResult.JdbcLotteryDrawResultRepository;
+import team26.repository.lotteryTickets.JdbcLotteryTicketsRepository;
 import team26.repository.user.JdbcUserRepository;
 
 import java.sql.Connection;
@@ -34,19 +38,12 @@ public class Application {
             JdbcUserRepository userRepository = new JdbcUserRepository();
             JdbcLotteryDrawRepository lotteryDrawRepository = new JdbcLotteryDrawRepository();
 
-            lotteryDrawRepository.updateStatus(UUID.fromString("493216d1-0462-43a7-afc4-b7d3a27dfdbc"), LotteryDrawStatus.ACTIVE);
+            Optional<User> user = userRepository.findByLogin("Tima");
+            Optional<LotteryDraw> lotteryDraw = lotteryDrawRepository.findByDrawNumber(1);
+            Integer[] arr = new Integer[]{24, 13, 25, 17, 8};
+            LotteryTicket ticket = new JdbcLotteryTicketsRepository().save(new LotteryTicket(user.get(), lotteryDraw.get(), arr));
 
-//            System.out.println(lotteryDraw.size());
-//            Optional<User> user = userRepository.findByLogin("testLogin1");
-//            if (user.isPresent()) {
-//                User resUser = user.get();
-//            }
-//                List<User> list = userRepository.findAllByRole(UserRole.USER);
-//
-//                System.out.println("User is exists by " + "phone" + " " + "null" + ": " + list);
-//            resUser.setName("Tima");
-//            User res = userRepository.save(new User("testName3", "testSUrname3", "testLogin3", "testEmail3@gmail.com", null, "hashedPass"));
-
+            LotteryDrawResult result = new JdbcLotteryDrawResultRepository().save(new LotteryDrawResult(lotteryDraw.get()));
 
         } catch (Exception e) {
             System.err.println("Failed to initialize database: " + e.getMessage());

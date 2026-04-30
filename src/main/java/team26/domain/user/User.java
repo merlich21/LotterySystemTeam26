@@ -37,48 +37,12 @@ public class User {
     @Getter
     @Setter
     @Column(
-            name = "name",
-            length = 100,
-            nullable = false
-    )
-    private String name;
-
-    @Getter
-    @Setter
-    @Column(
-            name = "surname",
-            length = 100,
-            nullable = false
-    )
-    private String surname;
-
-    @Getter
-    @Setter
-    @Column(
             name = "login",
             length = 50,
             nullable = false,
             unique = true
     )
     private String login;
-
-    @Getter
-    @Setter
-    @Column(
-            name = "email",
-            nullable = false,
-            unique = true
-    )
-    private String email;
-
-    @Getter
-    @Setter
-    @Column(
-            name = "phone",
-            length = 12,
-            unique = true
-    )
-    private String phone;
 
     @Getter
     @Setter
@@ -116,13 +80,9 @@ public class User {
     public User() {
     }
 
-    public User(String name, String surname, String login,
-                String email, String phone, String hashedPassword) {
-        this.name = name;
-        this.surname = surname;
+    public User(String login,
+                String hashedPassword) {
         this.login = login;
-        this.email = email;
-        this.phone = phone;
         this.hashedPassword = hashedPassword;
     }
 }

@@ -1,19 +1,12 @@
 CREATE TABLE users
 (
     id              UUID PRIMARY KEY      DEFAULT gen_random_uuid(),
-    name            VARCHAR(100) NOT NULL,
-    surname         VARCHAR(100) NOT NULL,
     login           VARCHAR(50)  NOT NULL UNIQUE,
-    email           VARCHAR(255) NOT NULL UNIQUE,
-    phone           VARCHAR(12) CHECK (phone ~ '^[0-9]{11,12}$') UNIQUE,
     role            VARCHAR(20)           DEFAULT 'USER' CHECK (role IN ('USER', 'ADMIN')),
     hashed_password VARCHAR(255) NOT NULL,
-    created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT check_email_valid CHECK ( email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$' )
+    created_at      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_users_email ON users (email);
 CREATE INDEX idx_users_login ON users (login);
 
 CREATE TABLE lottery_draws

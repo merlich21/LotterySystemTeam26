@@ -43,7 +43,7 @@ public class JdbcLotteryTicketsRepository implements LotteryTicketsRepository {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    lotteryTicket = ConverterData.convertDataToLotteryTicket(rs);
+                    ConverterData.convertDataToLotteryTicket(rs, lotteryTicket);
                     log.info("Lottery ticket saved: {} (user: {}, draw: {})",
                             lotteryTicket.getId(),
                             lotteryTicket.getUser().getId(),

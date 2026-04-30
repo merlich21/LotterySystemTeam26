@@ -32,20 +32,16 @@ public class JdbcUserRepository implements UserRepository {
     public User save(User user) {
 
         String sql = """
-                INSERT INTO users (name, surname, login, email, phone, role, hashed_password)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO users (login, role, hashed_password)
+                VALUES (?, ?, ?)
                 RETURNING id, created_at;
                 """;
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, user.getName());
-            stmt.setString(2, user.getSurname());
-            stmt.setString(3, user.getLogin());
-            stmt.setString(4, user.getEmail());
-            stmt.setString(5, user.getPhone());
-            stmt.setString(6, user.getRole().name());
-            stmt.setString(7, user.getHashedPassword());
+            stmt.setString(1, user.getLogin());
+            stmt.setString(2, user.getRole().name());
+            stmt.setString(3, user.getHashedPassword());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -65,12 +61,6 @@ public class JdbcUserRepository implements UserRepository {
     public Optional<User> findByLogin(String login) {
         if (login == null) return Optional.empty();
         return findByField(login, UserSearchField.LOGIN);
-    }
-
-    @Override
-    public Optional<User> findByEmail(String email) {
-        if (email == null) return Optional.empty();
-        return findByField(email, UserSearchField.EMAIL);
     }
 
     @Override
@@ -133,21 +123,17 @@ public class JdbcUserRepository implements UserRepository {
     public User update(User user) {
         String sql = """
                 UPDATE users
-                SET name = ?, surname = ?, login = ?, email = ?, phone = ?, role = ?, hashed_password = ?
+                SET login = ?, role = ?, hashed_password = ?
                 WHERE id = ?
                 """;
 
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
         ) {
-            stmt.setString(1, user.getName());
-            stmt.setString(2, user.getSurname());
-            stmt.setString(3, user.getLogin());
-            stmt.setString(4, user.getEmail());
-            stmt.setString(5, user.getPhone());
-            stmt.setString(6, user.getRole().name());
-            stmt.setString(7, user.getHashedPassword());
-            stmt.setObject(8, user.getId());
+            stmt.setString(1, user.getLogin());
+            stmt.setString(2, user.getRole().name());
+            stmt.setString(3, user.getHashedPassword());
+            stmt.setObject(4, user.getId());
 
             int updated = stmt.executeUpdate();
             if (updated == 0) {
@@ -189,18 +175,6 @@ public class JdbcUserRepository implements UserRepository {
     public boolean existsByLogin(String login) {
         if (login == null) return false;
         return existsByField(login, UserExistsField.LOGIN);
-    }
-
-    @Override
-    public boolean existsByEmail(String email) {
-        if (email == null) return false;
-        return existsByField(email, UserExistsField.EMAIL);
-    }
-
-    @Override
-    public boolean existsByPhone(String phone) {
-        if (phone == null) return false;
-        return existsByField(phone, UserExistsField.PHONE);
     }
 
     private Optional<User> findByField(String value, UserSearchField field) {
