@@ -2,9 +2,12 @@ package team26.util.database;
 
 import team26.domain.lotteryDraw.LotteryDraw;
 import team26.domain.lotteryDraw.LotteryDrawStatus;
+import team26.domain.lotteryTicket.LotteryTicket;
+import team26.domain.lotteryTicket.LotteryTicketStatus;
 import team26.domain.user.User;
 import team26.domain.user.UserRole;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
@@ -47,6 +50,27 @@ public class ConverterData {
         draw.setStatus(LotteryDrawStatus.valueOf(rs.getString("status")));
         draw.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
         return draw;
+    }
+
+    public static LotteryTicket convertDataToLotteryTicket(ResultSet rs) throws SQLException {
+        LotteryTicket ticket = new LotteryTicket();
+        ticket.setId(rs.getObject("id", UUID.class));
+        ticket.setStatus(LotteryTicketStatus.valueOf(rs.getString("status")));
+        ticket.setCreateAt(rs.getObject("created_at", OffsetDateTime.class));
+
+        // Массив чисел
+        Array numbersArray = rs.getArray("ticket_numbers");
+        if (numbersArray != null) {
+            Integer[] numbers = (Integer[]) numbersArray.getArray();
+
+            ticket.setTicketNumbers(numbers);
+        }
+
+
+        UUID userId = rs.getObject("user_id", UUID.class);
+        UUID drawId = rs.getObject("lottery_draw_id", UUID.class);
+
+        return ticket;
     }
 
 }

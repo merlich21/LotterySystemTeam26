@@ -63,6 +63,7 @@ public class LotteryTicket {
     )
     private LotteryTicketStatus status = LotteryTicketStatus.PENDING;
 
+    @Setter
     @Column(
             name = "ticket_numbers",
             nullable = false,
@@ -82,7 +83,7 @@ public class LotteryTicket {
     )
     private OffsetDateTime createAt;
 
-    protected LotteryTicket() {
+    public LotteryTicket() {
     }
 
     public LotteryTicket(User user, LotteryDraw lotteryDraw, Integer[] ticketNumbers) {

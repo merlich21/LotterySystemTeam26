@@ -2,6 +2,7 @@ package team26.repository.lotteryDraw;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import team26.config.database.DatabaseConfig;
 import team26.domain.lotteryDraw.LotteryDraw;
 import team26.domain.lotteryDraw.LotteryDrawStatus;
 import team26.util.database.ConverterData;
@@ -18,8 +19,8 @@ public class JdbcLotteryDrawRepository implements LotteryDrawRepository {
     private final DataSource dataSource;
     private final Logger logger = LoggerFactory.getLogger(JdbcLotteryDrawRepository.class);
 
-    public JdbcLotteryDrawRepository(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public JdbcLotteryDrawRepository() {
+        this.dataSource = DatabaseConfig.getDataSource();
     }
 
     @Override
