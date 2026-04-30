@@ -19,11 +19,11 @@ if /i "!script_path!"=="%cd%" (
     echo .
     echo The 'hackathon_postgres' image should be built
     echo .
-    docker run --name hackathon_postgres -p 7432:5432 -e POSTGRES_PASSWORD=!password! -e POSTGRES_DB=testDB -v postgres_data:/var/lib/postgresql/18/docker -v postgres_main:/var/lib/postgresql -d hackathon_postgres:latest
+    docker run --name hackathon_postgres -p 7432:5432 -e POSTGRES_PASSWORD=!password! -e POSTGRES_DB=lottery_db -v postgres_data:/var/lib/postgresql/18/docker -v postgres_main:/var/lib/postgresql -d hackathon_postgres:latest
     echo .
     echo _____INFORMATION:_____
     echo .
-    echo The 'hackathon_postgres' container should be running. Use 127.0.0.1:5432 to connect to PostgreSQL. Login: postgres, DB: postgres.
+    echo The 'hackathon_postgres' container should be running. Use 127.0.0.1:7432 to connect to PostgreSQL. Login: postgres, DB: lottery_db.
     echo Use 'docker start hackathon_postgres' command to start container, if it stops
 ) else (
     echo !password!
