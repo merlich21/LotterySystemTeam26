@@ -3,6 +3,10 @@ package ru.mephi.team26.mapper;
 import ru.mephi.team26.dto.draw.DrawCreateRequestDto;
 import ru.mephi.team26.dto.draw.DrawResponseDto;
 import ru.mephi.team26.entity.Draw;
+import ru.mephi.team26.entity.DrawStatus;
+
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 public class DrawMapper {
 
@@ -11,6 +15,7 @@ public class DrawMapper {
         entity.setTitle(requestDto.getTitle());
         entity.setNumbersCount(requestDto.getNumbersCount());
         entity.setMaxNumber(requestDto.getMaxNumber());
+        entity.setStatus(DrawStatus.ACTIVE);
         return entity;
     }
     

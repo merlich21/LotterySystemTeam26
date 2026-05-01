@@ -17,12 +17,12 @@ public class Draw {
 
     private String title;
 
-    @Enumerated(EnumType.STRING)
-    private DrawStatus status;
-
     private int numbersCount;
 
     private int maxNumber;
+
+    @Enumerated(EnumType.STRING)
+    private DrawStatus status;
 
     private OffsetDateTime createdAt;
 }
