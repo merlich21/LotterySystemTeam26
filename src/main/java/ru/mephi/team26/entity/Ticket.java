@@ -1,6 +1,7 @@
 package ru.mephi.team26.entity;
 
 import io.hypersistence.utils.hibernate.type.array.IntArrayType;
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +27,7 @@ public class Ticket {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Type(IntArrayType.class)
+    @Type(ListArrayType.class)
     @Column(columnDefinition = "integer[]")
     private List<Integer> numbers;
 
