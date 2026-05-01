@@ -30,7 +30,15 @@ public class UserService {
         admin.setPasswordHash(PasswordUtil.hashPassword("admin123"));
         admin.setRole(Role.ADMIN);
         admin.setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC));
+
+        User user = new User();
+        user.setUsername("user");
+        user.setPasswordHash(PasswordUtil.hashPassword("user123"));
+        user.setRole(Role.USER);
+        user.setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC));
+
         userRepository.save(admin);
+        userRepository.save(user);
     }
 
     public AuthResponseDto register(AuthRequestDto dto) {
