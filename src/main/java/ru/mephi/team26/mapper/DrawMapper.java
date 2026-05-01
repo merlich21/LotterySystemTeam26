@@ -16,6 +16,7 @@ public class DrawMapper {
         entity.setNumbersCount(requestDto.getNumbersCount());
         entity.setMaxNumber(requestDto.getMaxNumber());
         entity.setStatus(DrawStatus.ACTIVE);
+        entity.setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC));
         return entity;
     }
     

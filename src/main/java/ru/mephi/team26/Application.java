@@ -1,6 +1,10 @@
 package ru.mephi.team26;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.javalin.Javalin;
+import io.javalin.json.JavalinJackson;
 import ru.mephi.team26.config.AppConfig;
 import ru.mephi.team26.config.DatabaseConfig;
 import ru.mephi.team26.controller.DrawController;
@@ -27,7 +31,12 @@ import ru.mephi.team26.validator.UserValidator;
 public class Application {
 
     public static void main(String[] args) {
-        Javalin app = Javalin.create();
+        Javalin app = Javalin.create(config -> {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            config.jsonMapper(new JavalinJackson(mapper, false));
+        });
 
         AppConfig config = AppConfig.fromEnv();
         DatabaseConfig dbConfig = new DatabaseConfig(config);
