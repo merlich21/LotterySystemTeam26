@@ -40,7 +40,7 @@ public class UserService {
         User user = userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(() -> new ApiException(401, "Invalid credentials"));
 
-        if (user.getPasswordHash().equals(PasswordUtil.hashPassword(dto.getPassword()))) {
+        if (!user.getPasswordHash().equals(PasswordUtil.hashPassword(dto.getPassword()))) {
             throw new ApiException(401, "Invalid credentials");
         }
         return userMapper.entityToResponseDto(user);
