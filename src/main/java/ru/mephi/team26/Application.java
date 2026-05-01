@@ -45,7 +45,7 @@ public class Application {
         UserMapper userMapper = new UserMapper(jwtProvider);
         UserValidator userValidator = new UserValidator();
         UserService userService = new UserService(userRepository, userMapper, userValidator);
-        //authService.init();
+        userService.init();
         UserController userController = new UserController(userService);
         userController.init(app);
 

@@ -2,12 +2,16 @@ package ru.mephi.team26.service;
 
 import ru.mephi.team26.dto.auth.AuthRequestDto;
 import ru.mephi.team26.dto.auth.AuthResponseDto;
+import ru.mephi.team26.entity.Role;
 import ru.mephi.team26.entity.User;
 import ru.mephi.team26.exception.ApiException;
 import ru.mephi.team26.mapper.UserMapper;
 import ru.mephi.team26.repository.UserRepository;
 import ru.mephi.team26.util.PasswordUtil;
 import ru.mephi.team26.validator.UserValidator;
+
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 public class UserService {
     private final UserRepository userRepository;
@@ -21,8 +25,12 @@ public class UserService {
     }
 
     public void init() {
-        //userRepository.createIfAbsent("admin", PasswordHasher.sha256("admin123"), Role.ADMIN);
-        //userRepository.createIfAbsent("user", PasswordHasher.sha256("user123"), Role.USER);
+        User admin = new User();
+        admin.setUsername("admin");
+        admin.setPasswordHash(PasswordUtil.hashPassword("admin123"));
+        admin.setRole(Role.ADMIN);
+        admin.setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC));
+        userRepository.save(admin);
     }
 
     public AuthResponseDto register(AuthRequestDto dto) {
