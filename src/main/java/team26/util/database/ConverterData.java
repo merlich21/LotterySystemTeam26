@@ -19,11 +19,18 @@ import java.util.UUID;
 public class ConverterData {
 
     public static User convertDataToUser(ResultSet rs) throws SQLException {
-        User user = new User();
+//        User user = new User();
+//        user.setId(rs.getObject("id", UUID.class));
+//        user.setLogin(rs.getString("login"));
+//        user.setRole(UserRole.valueOf(rs.getString("role")));
+//        user.setHashedPassword(rs.getString("hashed_password"));
+//        user.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
+//        return user;
+        String login = rs.getString("login");
+        String password = rs.getString("hashed_password");
+        User user = new User(login, password);
         user.setId(rs.getObject("id", UUID.class));
-        user.setLogin(rs.getString("login"));
         user.setRole(UserRole.valueOf(rs.getString("role")));
-        user.setHashedPassword(rs.getString("hashed_password"));
         user.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
         return user;
     }
@@ -39,20 +46,20 @@ public class ConverterData {
     }
 
     public static LotteryDraw convertDataToLotteryDraw(ResultSet rs) throws SQLException {
-        LotteryDraw draw = new LotteryDraw();
+        String drawName = rs.getString("draw_name");
+        LotteryDraw draw = new LotteryDraw(drawName);
         draw.setId(rs.getObject("id", UUID.class));
         draw.setDrawNumber(rs.getInt("draw_number"));
-        draw.setDrawName(rs.getString("draw_name"));
         draw.setTotalTickets(rs.getInt("total_tickets"));
         draw.setStatus(LotteryDrawStatus.valueOf(rs.getString("status")));
         draw.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
         return draw;
     }
 
-    public static LotteryTicket convertDataToLotteryTicket(ResultSet rs) throws SQLException {
-        LotteryTicket ticket = new LotteryTicket();
-        return convertDataToLotteryTicket(rs, ticket);
-    }
+//    public static LotteryTicket convertDataToLotteryTicket(ResultSet rs) throws SQLException {
+//        LotteryTicket ticket = new LotteryTicket();
+//        return convertDataToLotteryTicket(rs, ticket);
+//    }
 
     public static LotteryTicket convertDataToLotteryTicket(ResultSet rs, LotteryTicket result) throws SQLException {
         result.setId(rs.getObject("id", UUID.class));
@@ -73,25 +80,25 @@ public class ConverterData {
 
         return result;
     }
-
-    public static LotteryDrawResult convertDataToLotteryDrawResult(ResultSet rs) throws SQLException {
-        LotteryDraw lotteryDraw = new LotteryDraw();
-        lotteryDraw.setId(rs.getObject("lottery_draw_id", UUID.class));
-        lotteryDraw.setDrawName(rs.getString("draw_name"));
-        lotteryDraw.setDrawNumber(rs.getInt("draw_number"));
-        lotteryDraw.setStatus(LotteryDrawStatus.valueOf(rs.getString("draw_status")));
-
-        LotteryDrawResult result = new LotteryDrawResult(lotteryDraw);
-
-        result.setId(rs.getObject("id", UUID.class));
-        Array numbersArray = rs.getArray("result_numbers");
-        if (numbersArray != null) {
-            result.setResultNumbers((Integer[]) numbersArray.getArray());
-        }
-        result.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
-
-        return result;
-    }
+//
+//    public static LotteryDrawResult convertDataToLotteryDrawResult(ResultSet rs) throws SQLException {
+//        String drawName = rs.getString("draw_name");
+//        LotteryDraw lotteryDraw = new LotteryDraw(drawName);
+//        lotteryDraw.setId(rs.getObject("lottery_draw_id", UUID.class));
+//        lotteryDraw.setDrawNumber(rs.getInt("draw_number"));
+//        lotteryDraw.setStatus(LotteryDrawStatus.valueOf(rs.getString("draw_status")));
+//
+//        LotteryDrawResult result = new LotteryDrawResult(lotteryDraw);
+//
+//        result.setId(rs.getObject("id", UUID.class));
+//        Array numbersArray = rs.getArray("result_numbers");
+//        if (numbersArray != null) {
+//            result.setResultNumbers((Integer[]) numbersArray.getArray());
+//        }
+//        result.setCreatedAt(rs.getObject("created_at", OffsetDateTime.class));
+//
+//        return result;
+//    }
 
 //    public static LotteryDrawResult convertDataToLotteryDrawResult(ResultSet rs, LotteryDrawResult result) throws SQLException {
 //        result.setId(rs.getObject("id", UUID.class));

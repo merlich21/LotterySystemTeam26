@@ -83,7 +83,7 @@ public class LotteryTicket {
     )
     private OffsetDateTime createAt;
 
-    public LotteryTicket() {
+    protected LotteryTicket() {
     }
 
     public LotteryTicket(User user, LotteryDraw lotteryDraw, Integer[] ticketNumbers) {

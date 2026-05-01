@@ -13,6 +13,7 @@ import team26.domain.lotteryDraw.LotteryDraw;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -65,12 +66,13 @@ public class LotteryDrawResult {
     )
     private LotteryDraw lotteryDraw;
 
-    public LotteryDrawResult() {
+    protected LotteryDrawResult() {
     }
 
     @Builder
-    public LotteryDrawResult(LotteryDraw lotteryDraw) {
+    public LotteryDrawResult(LotteryDraw lotteryDraw, Integer[] resultNumbers) {
         this.lotteryDraw = Objects.requireNonNull(lotteryDraw, "Розыгрыш обязателен");
+        this.resultNumbers = resultNumbers;
     }
 
     public boolean hasNumber(int number) {

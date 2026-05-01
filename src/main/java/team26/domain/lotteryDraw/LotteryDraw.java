@@ -92,7 +92,7 @@ public class LotteryDraw {
     @ToString.Exclude
     private LotteryDrawResult lotteryDrawResult;
 
-    public LotteryDraw() {
+    protected LotteryDraw() {
     }
 
     public LotteryDraw(String drawName) {

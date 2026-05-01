@@ -77,7 +77,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LotteryTicket> lotteryTickets = new ArrayList<>();
 
-    public User() {
+    protected User() {
     }
 
     public User(String login,
