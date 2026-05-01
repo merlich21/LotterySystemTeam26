@@ -1,22 +1,22 @@
 CREATE TABLE users
 (
-    id              UUID PRIMARY KEY      DEFAULT gen_random_uuid(),
+    id              UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     login           VARCHAR(50)  NOT NULL UNIQUE,
-    role            VARCHAR(20)           DEFAULT 'USER' CHECK (role IN ('USER', 'ADMIN')),
+    role            VARCHAR(20)              DEFAULT 'USER' CHECK (role IN ('USER', 'ADMIN')),
     hashed_password VARCHAR(255) NOT NULL,
-    created_at      TIMESTAMP WITH TIME ZONE    NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_users_login ON users (login);
 
 CREATE TABLE lottery_draws
 (
-    id            UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
+    id            UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     draw_number   INTEGER     NOT NULL UNIQUE GENERATED ALWAYS AS IDENTITY,
-    draw_name     VARCHAR(100)         DEFAULT null,
-    total_tickets INTEGER     NOT NULL DEFAULT 0,
-    status        VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED' CHECK (status IN ('SCHEDULED', 'ACTIVE', 'COMPLETED', 'CANCELLED')),
-    created_at    TIMESTAMP WITH TIME ZONE            DEFAULT current_timestamp
+    draw_name     VARCHAR(100)             DEFAULT null,
+    total_tickets INTEGER     NOT NULL     DEFAULT 0,
+    status        VARCHAR(20) NOT NULL     DEFAULT 'SCHEDULED' CHECK (status IN ('SCHEDULED', 'ACTIVE', 'COMPLETED', 'CANCELLED')),
+    created_at    TIMESTAMP WITH TIME ZONE DEFAULT current_timestamp
 );
 
 CREATE INDEX idx_draws_status ON lottery_draws (status);
@@ -25,12 +25,12 @@ CREATE INDEX idx_draws_number ON lottery_draws (draw_number);
 
 CREATE TABLE lottery_tickets
 (
-    id              UUID PRIMARY KEY     DEFAULT gen_random_uuid(),
+    id              UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     user_id         UUID        NOT NULL,
     lottery_draw_id UUID        NOT NULL,
-    status          VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK ( status IN ('PENDING', 'WIN', 'LOSE') ),
+    status          VARCHAR(20) NOT NULL     DEFAULT 'PENDING' CHECK ( status IN ('PENDING', 'WIN', 'LOSE') ),
     ticket_numbers  INTEGER[5]  NOT NULL,
-    created_at      TIMESTAMP WITH TIME ZONE            DEFAULT CURRENT_TIMESTAMP,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_lottery_draw_id FOREIGN KEY (lottery_draw_id) REFERENCES lottery_draws (id) ON DELETE CASCADE,
@@ -81,9 +81,9 @@ CREATE INDEX idx_tickets_status ON lottery_tickets (status);
 
 CREATE TABLE lottery_draws_result
 (
-    id              UUID PRIMARY KEY    DEFAULT gen_random_uuid(),
+    id              UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     result_numbers  INTEGER[5] NOT NULL,
-    created_at      TIMESTAMP WITH TIME ZONE           DEFAULT CURRENT_TIMESTAMP,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     lottery_draw_id UUID       NOT NULL unique,
 
     CONSTRAINT fk_lottery_draws_id FOREIGN KEY (lottery_draw_id) REFERENCES lottery_draws (id) ON DELETE RESTRICT,
