@@ -147,7 +147,6 @@ public class HibernateLotteryDrawRepository implements LotteryDrawRepository {
         }
     }
 
-    // 🔥 ВАЖНО: атомарные инкременты через HQL
     @Override
     public void incrementTotalTickets(UUID id) {
         executeTicketUpdate(id, +1);

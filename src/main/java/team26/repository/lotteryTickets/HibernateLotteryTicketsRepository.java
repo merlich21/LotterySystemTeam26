@@ -3,7 +3,6 @@ package team26.repository.lotteryTickets;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import team26.domain.lotteryTicket.LotteryTicket;
@@ -168,10 +167,10 @@ public class HibernateLotteryTicketsRepository implements LotteryTicketsReposito
     public int countByUserId(UUID userId) {
         try (Session session = sessionFactory.openSession()) {
             Long count = session.createQuery("""
-                    SELECT COUNT(lt)
-                    FROM LotteryTicket lt
-                    WHERE lt.user.id = :userId
-                    """, Long.class)
+                            SELECT COUNT(lt)
+                            FROM LotteryTicket lt
+                            WHERE lt.user.id = :userId
+                            """, Long.class)
                     .setParameter("userId", userId)
                     .uniqueResult();
 

@@ -37,7 +37,7 @@ public class HibernateLotteryDrawResultRepository implements LotteryDrawResultRe
             return result;
 
         } catch (Exception e) {
-//            if (tx != null) tx.rollback();
+            if (tx != null) tx.rollback();
             throw new RuntimeException("Failed to save lottery draw result", e);
         }
     }
