@@ -57,7 +57,7 @@ ___
 ### 1.2 Технологический стек
 
 - **Язык**: Java 17
-- **Build**: Maven 4.0.0
+- **Build**: Maven 3.9.9, Maven-wrapper-3.3.4
 - **REST API**: Javalin 7.2.0 (без Spring)
 - **БД**: PostgreSQL 18.3
 - **Пул соединений**: HikariCP

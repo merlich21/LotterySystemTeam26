@@ -9,6 +9,7 @@ public class Application {
 
         System.out.println(System.getProperty("java.version"));
 
+
         try {
             // Инициализируем базу данных и запускаем миграции
             DatabaseConfig.init();
