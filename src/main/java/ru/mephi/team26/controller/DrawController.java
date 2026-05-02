@@ -18,7 +18,7 @@ public class DrawController {
     }
 
     public void init(Javalin app) {
-        app.post("/api/draws", this::createDraw, Role.ADMIN);
+        app.post("/api/draws/create", this::createDraw, Role.ADMIN);
         app.get("/api/draws/active", this::getActiveDraws, Role.USER, Role.ADMIN);
         app.post("/api/draws/{drawId}/complete", this::completeDraw, Role.ADMIN);
         app.get("/api/draws/{drawId}/result", this::getDrawResult, Role.USER, Role.ADMIN);
