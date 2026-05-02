@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
@@ -12,12 +13,16 @@ import team26.domain.lotteryDraw.LotteryDraw;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Table(name = "lottery_draws_result")
 public class LotteryDrawResult {
+
+    @Setter
+    @Getter
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @JdbcTypeCode(SqlTypes.UUID)
@@ -30,6 +35,7 @@ public class LotteryDrawResult {
     @EqualsAndHashCode.Include
     private UUID id;
 
+    @Setter
     @Getter
     @Column(
             name = "result_numbers",
@@ -39,6 +45,7 @@ public class LotteryDrawResult {
     @JdbcTypeCode(SqlTypes.ARRAY)
     private Integer[] resultNumbers;
 
+    @Setter
     @Getter
     @CreationTimestamp
     @Column(
@@ -49,6 +56,7 @@ public class LotteryDrawResult {
     )
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
+    @Getter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "lottery_draw_id",
@@ -62,8 +70,9 @@ public class LotteryDrawResult {
     }
 
     @Builder
-    public LotteryDrawResult(LotteryDraw lotteryDraw) {
+    public LotteryDrawResult(LotteryDraw lotteryDraw, Integer[] resultNumbers) {
         this.lotteryDraw = Objects.requireNonNull(lotteryDraw, "Розыгрыш обязателен");
+        this.resultNumbers = resultNumbers;
     }
 
     public boolean hasNumber(int number) {

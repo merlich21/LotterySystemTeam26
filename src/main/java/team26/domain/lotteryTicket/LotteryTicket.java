@@ -21,6 +21,7 @@ import java.util.UUID;
 public class LotteryTicket {
 
     @Getter
+    @Setter
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @JdbcTypeCode(SqlTypes.UUID)
@@ -62,6 +63,7 @@ public class LotteryTicket {
     )
     private LotteryTicketStatus status = LotteryTicketStatus.PENDING;
 
+    @Setter
     @Column(
             name = "ticket_numbers",
             nullable = false,
@@ -71,6 +73,7 @@ public class LotteryTicket {
     private Integer[] ticketNumbers;
 
     @Getter
+    @Setter
     @CreationTimestamp
     @Column(
             name = "created_at",
