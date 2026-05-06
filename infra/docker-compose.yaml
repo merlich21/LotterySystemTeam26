@@ -1,0 +1,17 @@
+services:
+  lottery:
+    build:
+      context: .
+      dockerfile: infra/java-dockerfile
+    image: hackathon_java
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=jdbc:postgresql://localhost:7432/lottery_db
+      - DB_USER_NAME=postgres
+      - DB_USER_PASSWORD=postgres
+    networks:
+      - lottery-network
+    depends_on:
+      - db
+
