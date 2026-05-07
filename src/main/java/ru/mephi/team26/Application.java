@@ -67,7 +67,7 @@ public class Application {
 
         TicketMapper ticketMapper = new TicketMapper();
         TicketValidator ticketValidator = new TicketValidator();
-        TicketService ticketService = new TicketService(ticketRepository, drawRepository, ticketMapper, ticketValidator);
+        TicketService ticketService = new TicketService(ticketRepository, userRepository, drawRepository, ticketMapper, ticketValidator);
         TicketController ticketController = new TicketController(ticketService);
         ticketController.init(app);
 
