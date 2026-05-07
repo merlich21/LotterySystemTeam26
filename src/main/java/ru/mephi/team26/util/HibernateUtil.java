@@ -20,7 +20,7 @@ public class HibernateUtil {
                 .setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
                 .setProperty("hibernate.connection.url", "jdbc:postgresql://localhost:5432/postgres")
                 .setProperty("hibernate.connection.username", "postgres")
-                .setProperty("hibernate.connection.password", "123456")
+                .setProperty("hibernate.connection.password", "postgres")
                 .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
                 .setProperty("hibernate.hbm2ddl.auto", "create")
                 .setProperty("hibernate.show_sql", "true")
