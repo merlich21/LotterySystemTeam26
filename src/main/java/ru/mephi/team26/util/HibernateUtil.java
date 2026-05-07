@@ -18,7 +18,7 @@ public class HibernateUtil {
     private static SessionFactory buildSessionFactory() {
         Configuration configuration = new Configuration()
                 .setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
-                .setProperty("hibernate.connection.url", "jdbc:postgresql://localhost:5432/postgres")
+                .setProperty("hibernate.connection.url", "jdbc:postgresql://hackathon_postgres:5432/postgres")
                 .setProperty("hibernate.connection.username", "postgres")
                 .setProperty("hibernate.connection.password", "postgres")
                 .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")

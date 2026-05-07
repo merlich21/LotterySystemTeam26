@@ -7,7 +7,7 @@
 
         <!-- DB connection -->
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/lottery_db</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://hackathon_postgres:5432/lottery_db</property>
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">postgres</property>
 
