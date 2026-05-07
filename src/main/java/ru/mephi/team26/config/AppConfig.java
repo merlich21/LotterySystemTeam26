@@ -17,7 +17,7 @@ public class AppConfig {
     }
 
     public static AppConfig fromEnv() {
-        String jdbcUrl = getOrDefault("DB_URL", "jdbc:postgresql://localhost:5432/lotterySystemDB");
+        String jdbcUrl = getOrDefault("DB_URL", "jdbc:postgresql://localhost:5432/lottery_db");
         String dbUser = getOrDefault("DB_USER", "postgres");
         String dbPassword = getOrDefault("DB_PASSWORD", "postgres");
         int port = Integer.parseInt(getOrDefault("APP_PORT", "8080"));
