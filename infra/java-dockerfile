@@ -1,4 +1,5 @@
 # Стадия сборки
+#FROM eclipse-temurin:17-jdk-jammy AS build
 FROM eclipse-temurin:17-jdk-alpine AS build
 RUN apk add --no-cache bash
 WORKDIR /app
