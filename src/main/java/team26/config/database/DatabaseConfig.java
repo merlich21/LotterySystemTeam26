@@ -22,7 +22,7 @@ public class DatabaseConfig {
                 .load();
 
         HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setJdbcUrl(getEnv("DB_URL", "jdbc:postgresql://localhost:7432/lottery_db"));
+        hikariConfig.setJdbcUrl(getEnv("DB_URL", "jdbc:postgresql://hackathon_postgres:7432/lottery_db"));
         hikariConfig.setUsername(getEnv("DB_USER_NAME", "postgres"));
         hikariConfig.setPassword(getEnv("DB_USER_PASSWORD", "postgres"));
         hikariConfig.setDriverClassName("org.postgresql.Driver");
