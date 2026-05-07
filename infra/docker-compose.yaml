@@ -1,0 +1,42 @@
+services:
+  hackathon_java:
+    build:
+      context: ../
+      dockerfile: infra/java-dockerfile
+    container_name: hackathon_java
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=jdbc:postgresql://hackathon_postgres:7432/lottery_db
+      - DB_USER_NAME=postgres
+      - DB_USER_PASSWORD=postgres
+    networks:
+      - hackathon_network
+    depends_on:
+      - hackathon_postgres
+
+  hackathon_postgres:
+    build:
+      context: ../
+      dockerfile: infra/db-dockerfile
+    container_name: hackathon_postgres
+    restart: unless-stopped
+    ports:
+      - "7432:7432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=lottery_db
+      - PGPORT=7432
+    networks:
+      - hackathon_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/18/docker
+      - postgres_main:/var/lib/postgresql
+
+volumes:
+  postgres_data:
+  postgres_main:
+
+networks:
+  hackathon_network:
+    driver: bridge
