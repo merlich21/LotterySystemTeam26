@@ -16,6 +16,14 @@ ___
 
 ---
 
+## Инструкции по развёртыванию ##
+
+    - Локальный запуск
+    - Docker запуск
+    - API примеры
+
+---
+
 ## 1. АРХИТЕКТУРА РЕШЕНИЯ
 
 ### 1.1 Слои приложения
@@ -324,7 +332,9 @@ CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
 - Тестирование API (Postman / curl)
 
 **Файлы**:
-- `api/ApiRoutes.java`
+- `controller/*`
+- `security/*`
+- `dto/*`
 
 **Время**: 5-7 часов
 
@@ -337,10 +347,9 @@ CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
 - Unit-тесты логики
 
 **Файлы**:
-- `service/AuthService.java`
-- `service/DrawService.java`
-- `service/TicketService.java`
-- `service/LotteryEngine.java`
+- `service/*`
+- `util/*`
+- `validator/*`
 - `AppTest.java`
 
 **Время**: 6-8 часов
@@ -355,10 +364,10 @@ CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
 - Тестирование на БД
 
 **Файлы**:
-- `repository/Jdbc*.java`
-- `domain/*`
-- `db/migration/V1__init_schema.sql`
-- `util/NumberCodec.java`, `util/PasswordHasher.java`
+- `repository/*`
+- `entity/*`
+- `mapper/*`
+- `resources/db.migration/V1__init_schema.sql`
 
 **Время**: 6-8 часов
 
@@ -372,11 +381,12 @@ CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
 - Инструкции по развёртыванию
 
 **Файлы**:
+- `infra/*`
 - `Dockerfile`
 - `docker-compose.yml`
+- `resources/hibernate.cfg.xml`
 - `README.md`
-- `.env.example`
-- `db_dump_lottery_schema.sql`
+- `.env_example`
 
 **Время**: 3-4 часа
 
