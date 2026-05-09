@@ -16,26 +16,75 @@ ___
 
 ---
 
-## Инструкции по развёртыванию приложения ##
+## 1. Инструкции по развёртыванию приложения ##
 
-## Развёртывание и запуск на локальном сервере (ПК)
+## 1.1 Развёртывание и запуск на локальном сервере (ПК)
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+### Требования:
+
+#### На сервере (ПК) должны быть установлены:
+````
+- Java 17 (JDK) или выше.
+- Maven 3.9.9
+- БД PostgreSQL версии 18.3 или выше.
+````
+
+#### По умолчанию программа будет пытаться установить соединение с БД используя настройки:
+````
+- DB_URL=jdbc:postgresql://hackathon_postgres:5432/lottery_db
+- DB_USER=postgres
+- DB_PASSWORD=postgres
+````
+
+#### Для задания собственных настроек подключения к БД **НЕОБХОДИМО СОЗДАТЬ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ**:
+```
+- DB_URL=jdbc:postgresql://[HOST]:[PORT]/[DB_NAME]
+- DB_USER=[USERNAME]
+- DB_PASSWORD=[PASSWORD]
+```
+
+### Сборка приложения:
+
+Для сборки приложения нужно открыть директорию с проектом в терминале и выполнить команду:
+```shell
+    mvn clean package
+```
+
+После успешного выполнения этой команды в папке проекта появится новая папка target,
+внутри которой будет лежать файл 
+```LotterySystemTeam26-1.0.jar.``` 
+Это и есть наше готовое приложение.
+
+### Для запуска приложения нужно:
+- открыть терминал, перейти в директорию с файлом ```LotterySystemTeam26-1.0.jar```
+- выполнить команду
+```shell
+    java -jar LotterySystemTeam26-1.0.jar
+```
 
 
 
 
+## 1.2 Развертывание и запуск в Docker
 
+### Требования:
 
+#### На сервере (ПК) должны быть установлены:
+````
+- Docker
+- Docker-compose
+````
 
+### Скрипт запуска БД PostgreSQL(папка infra) и что делает:
 
-
-
-## Развертывание и запуск в Docker
-
-### Скрипт запуска БД PostgreSQL и что делает:
-- **run-db.bat** - скрипт Windows запуска БД PostgreSQL в контейнере
-- **run-db.sh** - скрипт Linux запуска БД PostgreSQL в контейнере
+#### Скрипт Windows запуска БД PostgreSQL в контейнере:
+````shell 
+    run-db.bat 
+````
+#### Cкрипт Linux запуска БД PostgreSQL в контейнере
+```shell
+    run-db.sh
+```
 
 - Запускать в директории infra
 - Удаляет старые образ и контейнер
@@ -46,28 +95,37 @@ ___
 - При остановке или удалении контейнера **данные сохраняются** (созданные таблицы и данные в них)
 
 ### Как запустить контейнер с Java:
-- docker build -t hackathon_java -f .\infra\java-dockerfile .
-- docker run --name hackathon_java -p 8080:8080 -e DB_URL=jdbc:postgresql://hackathon_postgres:5432/lottery_db -e DB_USER_NAME=postgres -e DB_USER_PASSWORD=postgres --network hackathon_network -d hackathon_java
+````shell
+    docker build -t hackathon_java -f .\infra\java-dockerfile .
+    docker run --name hackathon_java -p 8080:8080 -e DB_URL=jdbc:postgresql://hackathon_postgres:5432/lottery_db -e DB_USER_NAME=postgres -e DB_USER_PASSWORD=postgres --network hackathon_network -d hackathon_java
+````
+
 
 ### Как запустить приложение целиком:
-#### Первый раз:
-- docker compose -f infra/docker-compose.yaml up -d --build
-#### Без пересборки:
-- docker compose -f infra/docker-compose.yaml up -d
-
----
-
-## Инструкция по работе приложения
-
-
-
+- #### В первый раз:
+```shell
+    docker compose -f infra/docker-compose.yaml up -d --build
+```
+ 
+- #### Последующие разы без пересборки:
+```shell
+    docker compose -f infra/docker-compose.yaml up -d
+```
 
 
 ---
 
-## 1. АРХИТЕКТУРА РЕШЕНИЯ
+## 2. Инструкция по работе приложения
 
-### 1.1 Слои приложения
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+---
+
+## 3. АРХИТЕКТУРА РЕШЕНИЯ
+
+### 3.1 Слои приложения
 
 ```
 ┌─────────────────────────────────────┐
@@ -106,9 +164,9 @@ ___
 ```
 
 
-### 1.2 Технологический стек
+### 3.2 Технологический стек
 
-- **Язык**: Java 17
+- **Язык**: Java 17 (JDK)
 - **Build**: Maven 3.9.9, Maven-wrapper-3.3.4
 - **REST API**: Javalin 7.2.0 (без Spring)
 - **БД**: PostgreSQL 18.3
@@ -121,7 +179,7 @@ ___
 - **Контейнеризация**: Docker + Docker Compose
 
 
-### 1.3 Структура проекта
+### 3.3 Структура проекта
 
 ```
 src/main/java/team26/
@@ -186,13 +244,13 @@ Docker/Infra:
 
 ---
 
-## 2. МОДЕЛЬ ДАННЫХ
+## 4. МОДЕЛЬ ДАННЫХ
 
 ![DB_diagram_draw.jpeg](DB_diagram_draw.jpeg)
 
 ![DB_diagram_users.jpeg](DB_diagram_users.jpeg)
 
-### 2.1 Таблица `users`
+### 4.1 Таблица `users`
 
 ```sql
 CREATE TABLE IF NOT EXISTS users (
@@ -208,7 +266,7 @@ CREATE TABLE IF NOT EXISTS users (
 - `ADMIN`: создаёт тиражи, проводит розыгрыши
 - `USER`: покупает билеты, проверяет результаты
 
-### 2.2 Таблица `draws`
+### 4.2 Таблица `draws`
 
 ```sql
 CREATE TABLE IF NOT EXISTS draws (
@@ -226,7 +284,7 @@ CREATE TABLE IF NOT EXISTS draws (
 - `COMPLETED`: приём билетов завершён, результаты определены
 
 
-### 2.3 Таблица `draw_results`
+### 4.3 Таблица `draw_results`
 
 ```sql
 CREATE TABLE IF NOT EXISTS draw_results (
@@ -236,7 +294,7 @@ CREATE TABLE IF NOT EXISTS draw_results (
 );
 ```
 
-### 2.4 Таблица `tickets`
+### 4.4 Таблица `tickets`
 
 ```sql
 CREATE TABLE IF NOT EXISTS tickets (
@@ -254,7 +312,7 @@ CREATE TABLE IF NOT EXISTS tickets (
 - `WIN`: билет выиграл
 - `LOSE`: билет проиграл
 
-### 2.5 Индексы
+### 4.5 Индексы
 
 ```sql
 CREATE INDEX IF NOT EXISTS idx_draws_status ON draws(status);
@@ -264,15 +322,15 @@ CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
 
 ---
 
-## 3. REST API
+## 5. REST API
 
 ЗДЕСЬ БУДЕТ ОПИСАНИЕ REST API
 
 ---
 
-## 4. БИЗНЕС-ЛОГИКА И СТАТУСЫ
+## 6. БИЗНЕС-ЛОГИКА И СТАТУСЫ
 
-### 4.1 Жизненный цикл тиража
+### 6.1 Жизненный цикл тиража
 
 ```
                  ┌─────────────────────┐
@@ -305,7 +363,7 @@ CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
                  └─────────────────────┘
 ```
 
-### 4.2 Жизненный цикл билета
+### 6.2 Жизненный цикл билета
 
 ```
               ┌──────────────────┐
@@ -331,7 +389,7 @@ CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
     
 ```
 
-### 4.3 Правила валидации
+### 6.3 Правила валидации
 
 **Draw создание**:
 - `title` не пусто
