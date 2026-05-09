@@ -61,7 +61,7 @@ ___
 ```shell
     java -jar LotterySystemTeam26-1.0.jar
 ```
-
+API будет доступно на `http://localhost:8080`.
 
 
 
@@ -111,7 +111,7 @@ ___
 ```shell
     docker compose -f infra/docker-compose.yaml up -d
 ```
-
+API будет доступно на `http://localhost:8080`.
 
 ---
 
@@ -324,7 +324,187 @@ CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
 
 ## 5. REST API
 
-ЗДЕСЬ БУДЕТ ОПИСАНИЕ REST API
+### 5.1 Аутентификация
+
+#### `POST /api/auth/register`
+```
+Request:
+{
+  "username": "student1",
+  "password": "pass1234"
+}
+
+Response (201):
+{
+  "id": 1,
+  "username": "student1",
+  "role": "USER"
+}
+
+Error (409): Username already exists
+```
+
+#### `POST /api/auth/login`
+```
+Request:
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+Response (200):
+{
+  "token": "uuid-string",
+  "userId": 1,
+  "username": "admin",
+  "role": "ADMIN"
+}
+
+Error (401): Invalid credentials
+```
+
+### 5.2 Управление тиражами (ADMIN)
+
+#### `POST /api/draws` (ADMIN only)
+```
+Authorization: Bearer <ADMIN_TOKEN>
+
+Request:
+{
+  "title": "Weekly Draw",
+  "numbersCount": 5,
+  "maxNumber": 36
+}
+
+Response (201):
+{
+  "id": 1,
+  "title": "Weekly Draw",
+  "status": "ACTIVE",
+  "numbersCount": 5,
+  "maxNumber": 36,
+  "createdBy": 1,
+  "createdAt": "2026-04-15T19:00:00Z"
+}
+
+Error (400): Invalid draw parameters
+Error (403): Insufficient permissions (not ADMIN)
+```
+
+#### `GET /api/draws/active`
+```
+Authorization: Bearer <TOKEN>
+
+Response (200):
+{
+  "items": [
+    {
+      "id": 1,
+      "title": "Weekly Draw",
+      "status": "ACTIVE",
+      "numbersCount": 5,
+      "maxNumber": 36,
+      "createdBy": 1,
+      "createdAt": "2026-04-15T19:00:00Z"
+    }
+  ]
+}
+```
+
+#### `POST /api/draws/{drawId}/complete` (ADMIN only)
+```
+Authorization: Bearer <ADMIN_TOKEN>
+
+Response (200):
+{
+  "id": 1,
+  "title": "Weekly Draw",
+  "status": "COMPLETED",
+  "numbersCount": 5,
+  "maxNumber": 36,
+  "createdBy": 1,
+  "createdAt": "2026-04-15T19:00:00Z"
+}
+
+Внутри:
+- Генерируется выигрышная комбинация
+- Обновляются статусы всех билетов (WIN/LOSE)
+- Используется транзакция для консистентности
+
+Error (404): Draw not found
+Error (409): Draw is already completed
+```
+
+### 5.3 Управление билетами (USER)
+
+#### `POST /api/tickets` (USER only)
+```
+Authorization: Bearer <USER_TOKEN>
+
+Request:
+{
+  "drawId": 1,
+  "numbers": [1, 7, 11, 23, 35]
+}
+
+Response (201):
+{
+  "id": 1,
+  "drawId": 1,
+  "userId": 2,
+  "numbers": [1, 7, 11, 23, 35],
+  "status": "PENDING",
+  "createdAt": "2026-04-15T19:30:00Z"
+}
+
+Error (400): Duplicate numbers, invalid range
+Error (404): Draw not found
+Error (409): Draw is not active
+```
+
+#### `GET /api/tickets/{ticketId}/result`
+```
+Authorization: Bearer <USER_TOKEN>
+
+Response (200):
+{
+  "ticketId": 1,
+  "drawId": 1,
+  "userId": 2,
+  "numbers": [1, 7, 11, 23, 35],
+  "result": "WIN"  // WIN | LOSE | DRAW_NOT_COMPLETED
+}
+
+Error (403): You can only access your own ticket (non-ADMIN)
+Error (404): Ticket not found
+```
+
+### 5.4 Результаты тиража
+
+#### `GET /api/draws/{drawId}/result`
+```
+Authorization: Bearer <TOKEN>
+
+Response (200):
+{
+  "drawId": 1,
+  "winningNumbers": [1, 7, 11, 23, 35],
+  "generatedAt": "2026-04-15T20:00:00Z"
+}
+
+Error (404): Draw not found
+Error (409): Draw is not completed yet
+```
+
+### 5.5 Health Check
+
+#### `GET /api/health`
+```
+Response (200):
+{
+  "status": "ok"
+}
+```
 
 ---
 
@@ -411,5 +591,71 @@ CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
 
 ---
 
+## 7. ТЕСТОВЫЕ СЦЕНАРИИ
 
+### Сценарий 1: Happy Path
+
+```
+1. Регистрируем ADMIN-а
+   POST /api/auth/register → {username: "admin", password: "admin123"}
+
+2. Логинимся как ADMIN
+   POST /api/auth/login → получаем token_admin
+
+3. Создаём тираж
+   POST /api/draws → title: "Weekly", numbersCount: 5, maxNumber: 36
+   → Draw id = 1, status = ACTIVE
+
+4. Регистрируем USER-а
+   POST /api/auth/register → {username: "user1", password: "user123"}
+
+5. Логинимся как USER
+   POST /api/auth/login → получаем token_user
+
+6. Покупаем билет
+   POST /api/tickets → drawId: 1, numbers: [1,7,11,23,35]
+   → Ticket id = 1, status = PENDING
+
+7. Завершаем тираж (ADMIN)
+   POST /api/draws/1/complete
+   → Генерируется winning_numbers, все tickets переходят в WIN/LOSE
+
+8. Проверяем результат
+   GET /api/tickets/1/result → result: "WIN" или "LOSE"
+```
+
+### Сценарий 2: Ошибки авторизации
+
+```
+1. Попытка создать draw без токена
+   POST /api/draws → 401 Unauthorized
+
+2. Попытка создать draw с USER токеном
+   POST /api/draws (token: token_user) → 403 Forbidden
+
+3. Попытка купить билет с ADMIN токеном
+   POST /api/tickets (token: token_admin) → 403 Forbidden
+
+4. Попытка доступа к чужому билету
+   GET /api/tickets/2/result (token: token_user, но ticket.user_id ≠ user_id)
+   → 403 Forbidden
+```
+
+### Сценарий 3: Граничные случаи
+
+```
+1. Попытка создать тираж с invalid параметрами
+   POST /api/draws → numbersCount: 100 → 400 Bad Request
+
+2. Попытка купить билет с дублирующимися числами
+   POST /api/tickets → numbers: [1,1,7,11,23] → 400 Bad Request
+
+3. Попытка купить билет для завершённого тиража
+   POST /api/tickets (drawId: завершённый) → 409 Conflict
+
+4. Попытка завершить уже завершённый тираж
+   POST /api/draws/1/complete (второй раз) → 409 Conflict
+```
+
+---
 
