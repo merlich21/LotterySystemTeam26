@@ -6,22 +6,20 @@ import io.javalin.http.ForbiddenResponse;
 import io.javalin.http.UnauthorizedResponse;
 import io.javalin.security.RouteRole;
 import io.jsonwebtoken.Claims;
+import lombok.RequiredArgsConstructor;
 import ru.mephi.team26.entity.Role;
 
 import java.util.Set;
 
+@RequiredArgsConstructor
 public class JwtFilter {
     private final JwtProvider jwtProvider;
 
-    public JwtFilter(JwtProvider jwtProvider) {
-        this.jwtProvider = jwtProvider;
-    }
-
     public void init(Javalin app) {
-        app.beforeMatched(this::handle);
+        app.beforeMatched(this::filter);
     }
 
-    private void handle(Context ctx) {
+    private void filter(Context ctx) {
         Set<RouteRole> permittedRoles = ctx.routeRoles();
         if (permittedRoles.isEmpty()) {
             return;
@@ -29,12 +27,12 @@ public class JwtFilter {
 
         String authHeader = ctx.header("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new UnauthorizedResponse("Token missing or invalid");
+            throw new UnauthorizedResponse("Missing JWT");
         }
 
         try {
-            String token = authHeader.replace("Bearer ", "");
-            Claims claims = jwtProvider.parseToken(token);
+            String jwt = authHeader.replace("Bearer ", "");
+            Claims claims = jwtProvider.parseToken(jwt);
 
             ctx.attribute("username", claims.getSubject());
             ctx.attribute("userId", claims.get("userId", Long.class));
@@ -46,7 +44,7 @@ public class JwtFilter {
                 throw new ForbiddenResponse("Insufficient permissions");
             }
         } catch (Exception e) {
-            throw new UnauthorizedResponse("Invalid token: " + e.getMessage());
+            throw new UnauthorizedResponse("Invalid JWT: " + e.getMessage());
         }
     }
 }

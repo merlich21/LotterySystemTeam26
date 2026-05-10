@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS draws (
 
 CREATE TABLE IF NOT EXISTS draw_results (
     draw_id BIGINT PRIMARY KEY REFERENCES draws(id),
-    winning_numbers VARCHAR(128) NOT NULL,
+    winning_numbers INTEGER[] NOT NULL,
     generated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS tickets (
     id BIGSERIAL PRIMARY KEY,
     draw_id BIGINT NOT NULL REFERENCES draws(id),
     user_id BIGINT NOT NULL REFERENCES users(id),
-    numbers VARCHAR(128) NOT NULL,
+    numbers INTEGER[] NOT NULL,
     status VARCHAR(16) NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

@@ -1,15 +1,18 @@
-package ru.mephi.team26.mapper;
+package ru.mephi.team26.mapper.impl;
 
 import ru.mephi.team26.dto.draw.DrawCreateRequestDto;
 import ru.mephi.team26.dto.draw.DrawResponseDto;
 import ru.mephi.team26.entity.Draw;
 import ru.mephi.team26.entity.DrawStatus;
+import ru.mephi.team26.mapper.RequestMapper;
+import ru.mephi.team26.mapper.ResponseMapper;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-public class DrawMapper {
+public class DrawMapper implements RequestMapper<Draw, DrawCreateRequestDto>, ResponseMapper<Draw, DrawResponseDto> {
 
+    @Override
     public Draw requestDtoToEntity(DrawCreateRequestDto requestDto) {
         Draw entity = new Draw();
         entity.setTitle(requestDto.getTitle());
@@ -19,7 +22,8 @@ public class DrawMapper {
         entity.setCreatedAt(OffsetDateTime.now(ZoneOffset.UTC));
         return entity;
     }
-    
+
+    @Override
     public DrawResponseDto entityToResponseDto(Draw entity) {
         DrawResponseDto responseDto = new DrawResponseDto();
         responseDto.setId(entity.getId());

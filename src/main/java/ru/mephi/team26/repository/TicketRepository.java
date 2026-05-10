@@ -3,6 +3,7 @@ package ru.mephi.team26.repository;
 import org.hibernate.query.Query;
 import ru.mephi.team26.entity.Draw;
 import ru.mephi.team26.entity.Ticket;
+import ru.mephi.team26.entity.TicketStatus;
 import ru.mephi.team26.util.HibernateUtil;
 
 import java.util.List;
@@ -21,11 +22,11 @@ public class TicketRepository {
         return HibernateUtil.inTransaction(session -> Optional.ofNullable(session.get(Ticket.class, id)));
     }
 
-    // unused
-    public List<Ticket> findAllByDraw(Draw draw) {
+    public List<Ticket> findAllByDrawAndStatus(Draw draw, TicketStatus status) {
         return HibernateUtil.inTransaction(session -> {
-            Query<Ticket> query = session.createQuery("FROM Ticket WHERE draw = :draw ORDER BY id", Ticket.class);
+            Query<Ticket> query = session.createQuery("FROM Ticket WHERE draw = :draw AND (:status IS NULL OR status = :status) ORDER BY id", Ticket.class);
             query.setParameter("draw", draw);
+            query.setParameter("status", status);
             return query.list();
         });
     }

@@ -10,10 +10,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 public class JwtProvider {
+    private final long duration;
     private final SecretKey key;
 
     public JwtProvider() {
-        this.key = Keys.hmacShaKeyFor("secretsecretsecretsecretsecretsecret".getBytes(StandardCharsets.UTF_8));
+        this.duration = 3_600_000;
+        this.key = Keys.hmacShaKeyFor(System.getenv("JWT_KEY").getBytes(StandardCharsets.UTF_8));
     }
 
     public String createToken(User user) {
@@ -22,7 +24,7 @@ public class JwtProvider {
                 .claim("userId", user.getId())
                 .claim("role", user.getRole().name())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 3_600_000))
+                .expiration(new Date(System.currentTimeMillis() + duration))
                 .signWith(key)
                 .compact();
     }

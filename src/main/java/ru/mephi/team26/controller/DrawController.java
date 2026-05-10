@@ -2,26 +2,29 @@ package ru.mephi.team26.controller;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import lombok.RequiredArgsConstructor;
 import ru.mephi.team26.dto.draw.DrawCreateRequestDto;
 import ru.mephi.team26.dto.draw.DrawResponseDto;
 import ru.mephi.team26.dto.draw.DrawResultResponseDto;
+import ru.mephi.team26.dto.ticket.TicketResponseDto;
 import ru.mephi.team26.entity.Role;
+import ru.mephi.team26.entity.TicketStatus;
 import ru.mephi.team26.service.DrawService;
+import ru.mephi.team26.service.TicketService;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 public class DrawController {
     private final DrawService drawService;
-
-    public DrawController(DrawService drawService) {
-        this.drawService = drawService;
-    }
+    private final TicketService ticketService;
 
     public void init(Javalin app) {
-        app.post("/api/draws/create", this::createDraw, Role.ADMIN);
+        app.post("/api/draws", this::createDraw, Role.ADMIN);
         app.get("/api/draws/active", this::getActiveDraws, Role.USER, Role.ADMIN);
         app.post("/api/draws/{drawId}/complete", this::completeDraw, Role.ADMIN);
         app.get("/api/draws/{drawId}/result", this::getDrawResult, Role.USER, Role.ADMIN);
+        app.get("/api/draws/{drawId}/tickets", this::getTicketsByStatusForDraw, Role.ADMIN);
     }
 
     private void createDraw(Context ctx) {
@@ -45,5 +48,12 @@ public class DrawController {
         long drawId = Long.parseLong(ctx.pathParam("drawId"));
         DrawResultResponseDto responseDto = drawService.getDrawResultById(drawId);
         ctx.status(200).json(responseDto);
+    }
+
+    private void getTicketsByStatusForDraw(Context ctx) {
+        long drawId = Long.parseLong(ctx.pathParam("drawId"));
+        TicketStatus status = ctx.queryParamAsClass("status", TicketStatus.class).getOrDefault(null);
+        List<TicketResponseDto> responseDtos = ticketService.getTicketsByDrawIdAndStatus(drawId, status);
+        ctx.status(200).json(responseDtos);
     }
 }
