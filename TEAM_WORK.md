@@ -3,7 +3,7 @@
 #### **Участник 1 (Архитектор / Lead Backend)**
 - Дизайн архитектуры слоёв
 - Настройка проекта (Maven, структура пакетов)
-- Настройка окружения (конфиг, Database, Flyway)
+- Настройка окружения (конфиг, Database)
 - Интеграция компонентов
 - Code Review
 
@@ -51,7 +51,7 @@
 
 #### **Участник 4 (Database разработчик)**
 - Проектирование схемы БД
-- Миграции (Flyway)
+- SQL-скрипт создания таблиц
 - JDBC Repository слой
 - Работа с транзакциями (settlement)
 - Тестирование на БД
@@ -60,7 +60,7 @@
 - `repository/*`
 - `entity/*`
 - `mapper/*`
-- `resources/db.migration/V1__init_schema.sql`
+- `resources/schema.sql`
 
 **Время**: 6-8 часов
 
@@ -74,12 +74,12 @@
 - Инструкции по развёртыванию
 
 **Файлы**:
-- `infra/*`
-- `Dockerfile`
-- `docker-compose.yml`
-- `resources/hibernate.cfg.xml`
+- `infra/infra.md`
+- `infra/run-db.*`
+- `infra/db-dockerfile`
+- `infra/java-dockerfile`
+- `infra/docker-compose.yaml`
 - `README.md`
-- `.env_example`
 
 **Время**: 3-4 часа
 
@@ -93,7 +93,7 @@
 
 **Задачи**:
 - [ ] Создать структуру папок (`src/main/java/org/example/*`)
-- [ ] Настроить `pom.xml` с зависимостями (Javalin, PostgreSQL, Flyway, HikariCP)
+- [ ] Настроить `pom.xml` с зависимостями (Javalin, PostgreSQL, HikariCP)
 - [ ] Добавить плагины (maven-compiler, maven-shade, exec-maven)
 - [ ] Создать `AppConfig` для управления окружением
 - [ ] Создать `Database` для управления пулом соединений
@@ -113,7 +113,7 @@
 **Задачи**:
 - [ ] Создать domain records: `User`, `Draw`, `Ticket`, `DrawResult`
 - [ ] Создать enums: `Role`, `DrawStatus`, `TicketStatus`
-- [ ] Создать `V1__init_schema.sql` с таблицами
+- [ ] Создать `schema.sql` с таблицами
 - [ ] Добавить индексы на часто используемые колонки
 - [ ] Создать `NumberCodec` для кодирования списков чисел
 
@@ -195,8 +195,8 @@
 **Цель**: Подготовить к production-like запуску
 
 **Задачи**:
-- [ ] Написать `Dockerfile` (multi-stage build)
-- [ ] Написать `docker-compose.yml` (app + postgres)
+- [ ] Написать `db-dockerfile` и `java-dockerfile` (multi-stage build)
+- [ ] Написать `docker-compose.yaml` (app + postgres)
 - [ ] Написать подробный `README.md`:
     - Архитектура
     - Локальный запуск
@@ -204,12 +204,12 @@
     - API примеры
     - Статусы и переходы
     - Распределение ролей
-- [ ] Создать `.env.example`
-- [ ] Создать SQL дамп схемы
+- [ ] Создать `.env_example`
+- [ ] Добавить запуск SQL-скрипта `schema.sql` создания всех таблиц в контейнере
 
 **Ответственный**: Участник 5 (опционально, можно участник 1)
 
-**Проверка**: `docker compose up --build` запускает приложение и БД
+**Проверка**: `docker compose -f infra/docker-compose.yaml up -d --build` запускает приложение и БД
 
 ---
 
