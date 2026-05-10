@@ -172,8 +172,6 @@ API будет доступно на `http://localhost:8080`.
 - **Build**: Maven 3.9.9, Maven-wrapper-3.3.4
 - **REST API**: Javalin 7.2.0 (без Spring)
 - **БД**: PostgreSQL 18.3
-- **Пул соединений**: HikariCP
-- **Миграции**: Flyway
 - **ORM Framework**: Hibernate
 - **Вспомогательные Frameworks**: Jakarta, Lombok
 - **Логирование**: SLF4J + Logback
@@ -234,9 +232,9 @@ src/main/resources/
     └── V1__init_schema.sql              # Flyway migration (schema)
 
 src/test/java/org/example/
-└── AppTest.java                         # Unit tests for LotteryEngine
+└── AppTest.java                         # Unit tests
 
-Docker/Infra:
+infra:
 ├── Dockerfile                           # Multi-stage build
 ├── docker-compose.yml                   # App + PostgreSQL
 ├── .env_example                         # Environment template
