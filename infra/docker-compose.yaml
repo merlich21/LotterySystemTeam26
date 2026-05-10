@@ -10,6 +10,7 @@ services:
       - DB_URL=jdbc:postgresql://hackathon_postgres:5432/lottery_db
       - DB_USER_NAME=postgres
       - DB_USER_PASSWORD=postgres
+      - JWT_KEY=secretsecretsecretsecretsecretsecret
     networks:
       - hackathon_network
     depends_on:
