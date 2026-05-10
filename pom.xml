@@ -13,15 +13,21 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.18.36</lombok.version>
         <javalin.version>6.1.3</javalin.version>
         <jwt.version>0.12.6</jwt.version>
+        <jackson.version>2.12.7</jackson.version>
+        <slf4j.version>2.0.13</slf4j.version>
+        <postgres.version>42.7.4</postgres.version>
+        <hibernate.version>6.6.6.Final</hibernate.version>
+        <hibernate.hypersistence.version>3.9.0</hibernate.hypersistence.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
+            <version>${lombok.version}</version>
         </dependency>
 
         <dependency>
@@ -45,31 +51,31 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.12.7</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>2.0.13</version>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.4</version>
+            <version>${postgres.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>6.6.6.Final</version>
+            <version>${hibernate.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.hypersistence</groupId>
             <artifactId>hypersistence-utils-hibernate-63</artifactId>
-            <version>3.9.0</version>
+            <version>${hibernate.hypersistence.version}</version>
         </dependency>
     </dependencies>
 

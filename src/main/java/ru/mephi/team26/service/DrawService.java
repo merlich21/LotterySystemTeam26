@@ -6,16 +6,12 @@ import lombok.RequiredArgsConstructor;
 import ru.mephi.team26.dto.draw.DrawCreateRequestDto;
 import ru.mephi.team26.dto.draw.DrawResponseDto;
 import ru.mephi.team26.dto.draw.DrawResultResponseDto;
-import ru.mephi.team26.dto.ticket.TicketResponseDto;
 import ru.mephi.team26.entity.Draw;
 import ru.mephi.team26.entity.DrawResult;
-import ru.mephi.team26.entity.Ticket;
-import ru.mephi.team26.entity.TicketStatus;
 import ru.mephi.team26.mapper.impl.DrawMapper;
 import ru.mephi.team26.mapper.impl.DrawResultMapper;
 import ru.mephi.team26.repository.DrawRepository;
 import ru.mephi.team26.repository.DrawResultRepository;
-import ru.mephi.team26.repository.TicketRepository;
 import ru.mephi.team26.validator.impl.DrawValidator;
 
 import java.util.List;

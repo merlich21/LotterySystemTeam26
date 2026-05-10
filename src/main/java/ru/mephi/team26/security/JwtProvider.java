@@ -5,12 +5,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import ru.mephi.team26.config.HibernateConfig;
 import ru.mephi.team26.entity.User;
+import ru.mephi.team26.util.EnvUtil;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
-
-import static ru.mephi.team26.config.HibernateConfig.getOrDefault;
 
 public class JwtProvider {
     private final long duration;
@@ -18,9 +17,7 @@ public class JwtProvider {
 
     public JwtProvider() {
         this.duration = 3_600_000;
-        this.key = Keys.hmacShaKeyFor(HibernateConfig
-                .getOrDefault("JWT_KEY", "secretsecretsecretsecretsecretsecret")
-                .getBytes(StandardCharsets.UTF_8));
+        this.key = Keys.hmacShaKeyFor(EnvUtil.getOrDefault("JWT_KEY", "secretsecretsecretsecretsecretsecret").getBytes(StandardCharsets.UTF_8));
     }
 
     public String createToken(User user) {
