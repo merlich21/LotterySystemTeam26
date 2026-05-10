@@ -4,6 +4,7 @@ services:
       context: ../
       dockerfile: infra/java-dockerfile
     container_name: hackathon_java
+    restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
@@ -34,6 +35,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/18/docker
       - postgres_main:/var/lib/postgresql
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
 
 volumes:
   postgres_data:

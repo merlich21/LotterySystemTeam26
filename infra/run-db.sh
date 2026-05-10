@@ -13,7 +13,7 @@ if [ $(ls -la | grep run-db.sh | wc -l) -gt 0 ]; then
     docker build -t hackathon_postgres -f db-dockerfile .
     docker network create hackathon_network
     echo -e "\nThe 'hackathon_postgres' should be built\n"
-    docker run --name hackathon_postgres --network hackathon_network -p 5432:5432 -e PGPORT=5432 -e POSTGRES_PASSWORD=!password! -e POSTGRES_DB=lottery_db -v postgres_data:/var/lib/postgresql/18/docker -v postgres_main:/var/lib/postgresql -d hackathon_postgres:latest
+    docker run --name hackathon_postgres --network hackathon_network -p 5432:5432 -e PGPORT=5432 -e POSTGRES_PASSWORD=!password! -e POSTGRES_DB=lottery_db -v postgres_data:/var/lib/postgresql/18/docker -v postgres_main:/var/lib/postgresql -v -v ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d -d hackathon_postgres:latest
     echo -e "\n_____INFORMATION:_____"
     echo -e "\nThe 'hackathon_postgres' container should be running. Use 127.0.0.1:5432 to connect to PostgreSQL. Login: postgres, DB: lottery_db"
     echo "Use 'docker start hackathon_postgres' command to start container, if it stops"
