@@ -161,7 +161,7 @@ API будет доступно на `http://localhost:8080`.
 │  - draws,                           │
 │  - tickets,                         │
 │  - draw_results,                    │
-│  - migrations (Flyway)              │
+│                                     │
 └─────────────────────────────────────┘
 ```
 
