@@ -34,7 +34,6 @@ ___
 - DB_URL=jdbc:postgresql://hackathon_postgres:5432/lottery_db
 - DB_USER=postgres
 - DB_PASSWORD=postgres
-- JWT_KEY=secretsecretsecretsecretsecretsecret
 ````
 
 #### Для задания собственных настроек подключения к БД **НЕОБХОДИМО СОЗДАТЬ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ**:
@@ -42,7 +41,6 @@ ___
 - DB_URL=jdbc:postgresql://[HOST]:[PORT]/[DB_NAME]
 - DB_USER=[USERNAME]
 - DB_PASSWORD=[PASSWORD]
-- JWT_KEY=secretsecretsecretsecretsecretsecret 
 ```
 
 ### Сборка приложения:
@@ -177,7 +175,7 @@ API будет доступно на `http://localhost:8080`.
 
 - **Язык**: Java 17 (JDK)
 - **Build**: Maven 3.9.9, Maven-wrapper-3.3.4
-- **REST API**: Javalin 7.2.0 (без Spring)
+- **REST API**: Javalin 6.1.3 (без Spring)
 - **БД**: PostgreSQL 18.3
 - **ORM Framework**: Hibernate
 - **Вспомогательные Frameworks**: Jakarta, Lombok
@@ -232,7 +230,7 @@ CREATE TABLE IF NOT EXISTS draws (
 ```sql
 CREATE TABLE IF NOT EXISTS draw_results (
     draw_id BIGINT PRIMARY KEY REFERENCES draws(id),
-    winning_numbers VARCHAR(128) NOT NULL,
+    winning_numbers INTEGER[] NOT NULL,
     generated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ```
@@ -244,7 +242,7 @@ CREATE TABLE IF NOT EXISTS tickets (
     id BIGSERIAL PRIMARY KEY,
     draw_id BIGINT NOT NULL REFERENCES draws(id),
     user_id BIGINT NOT NULL REFERENCES users(id),
-    numbers VARCHAR(128) NOT NULL,
+    numbers INTEGER[] NOT NULL,
     status VARCHAR(16) NOT NULL,                    -- PENDING | WIN | LOSE
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
