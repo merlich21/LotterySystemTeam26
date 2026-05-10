@@ -127,7 +127,7 @@ API будет доступно на `http://localhost:8080`.
 ## 2. Инструкция по работе приложения
 
 
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+См. разделы 5 и 7.
 
 
 ---
@@ -184,70 +184,6 @@ API будет доступно на `http://localhost:8080`.
 - **Логирование**: SLF4J + Logback
 - **Тестирование**: JUnit 5
 - **Контейнеризация**: Docker + Docker Compose
-
-
-### 3.3 Структура проекта
-
-```
-src/main/java/team26/
-├── Application.java                     # Entry point
-├── api/
-│   └── ApiRoutes.java                   # REST routes, auth middleware
-├── service/
-│   ├── AuthService.java                 # Auth & session management
-│   ├── DrawService.java                 # Draw lifecycle
-│   ├── TicketService.java               # Ticket operations
-│   └── LotteryEngine.java               # Number generation & validation
-├── repository/
-│   ├── JdbcUserRepository.java          # User CRUD
-│   ├── JdbcDrawRepository.java          # Draw CRUD & settlement
-│   └── JdbcTicketRepository.java        # Ticket CRUD
-├── domain/
-│   ├── lotteryDraw/
-│   │   ├── LotteryDraw.java             # Draw entity (Hibernate)
-│   │   ├── LotteryDrawRecord.java       # Draw entity (record)
-│   │   └── LotteryDrawStatus.java       # Enum: SCHEDULED, ACTIVE, COMPLETED, CANCELLED  
-│   ├── lotteryDrawResult/   
-│   │   ├── LotteryDrawResults.java      # Draw result entity (Hibernate)
-│   │   └── LotteryDrawResultsRecord.java  # Draw result entity (record) 
-│   ├── lotteryTicket/       
-│   │   ├── LotteryTicket.java           # Ticket entity (Hibernate)
-│   │   ├── LotteryTicketRecord.java     # Ticket entity (record)
-│   │   └── LotteryTicketStatus.java     # Enum: PENDING, WIN, LOSE
-│   └── user/
-│       ├── User.java                    
-│       ├── UserRecord.java              # User entity (record)
-│       └── UserRole.java                # Enum: ADMIN, USER              
-├── config/
-│   ├── api/
-│   │   └── JavalinConfig.java           # API(Javalin) config
-│   └── database/
-│       ├── AppConfig.java               # Environment config
-│       └── Database.java                # Connection pool & migration runner
-├── exceptions/
-│   ├── ApiException.java                # Unified error handling                    
-│   ├── ErrorResponse.java               # Error Response entity (record)
-│   └── UnauthorizedException.java       # Unauthorized error handling
-└── util/
-    ├── database/
-    │   └── Helper.java                  # Lottery ticket`s numbers validation
-    ├── PasswordHasher.java              # SHA-256 hashing
-    └── NumberCodec.java                 # Encode/decode number lists
-
-src/main/resources/
-├── db/migration/
-    └── V1__init_schema.sql              # Flyway migration (schema)
-
-src/test/java/org/example/
-└── AppTest.java                         # Unit tests
-
-infra:
-├── Dockerfile                           # Multi-stage build
-├── docker-compose.yml                   # App + PostgreSQL
-├── .env_example                         # Environment template
-├── db_dump_lottery_schema.sql           # Schema dump
-└── README.md                            # Setup & API docs
-```
 
 ---
 
