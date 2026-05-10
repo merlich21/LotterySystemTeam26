@@ -6,6 +6,7 @@ import ru.mephi.team26.entity.Draw;
 import ru.mephi.team26.entity.DrawResult;
 import ru.mephi.team26.entity.Ticket;
 import ru.mephi.team26.entity.User;
+import ru.mephi.team26.util.EnvUtil;
 
 public class HibernateConfig {
     private static final SessionFactory SESSION_FACTORY;
@@ -13,9 +14,9 @@ public class HibernateConfig {
     static {
         Configuration configuration = new Configuration()
                 .setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
-                .setProperty("hibernate.connection.url", getOrDefault("DB_URL", "jdbc:postgresql://localhost:5432/lottery_db"))
-                .setProperty("hibernate.connection.username", getOrDefault("DB_USER", "postgres"))
-                .setProperty("hibernate.connection.password", getOrDefault("DB_PASSWORD", "postgres"))
+                .setProperty("hibernate.connection.url", EnvUtil.getOrDefault("DB_URL", "jdbc:postgresql://localhost:5432/lottery_db"))
+                .setProperty("hibernate.connection.username", EnvUtil.getOrDefault("DB_USER", "postgres"))
+                .setProperty("hibernate.connection.password", EnvUtil.getOrDefault("DB_PASSWORD", "postgres"))
                 .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
                 .setProperty("hibernate.hbm2ddl.auto", "update")
                 .setProperty("hibernate.show_sql", "true")
@@ -25,11 +26,6 @@ public class HibernateConfig {
                 .addAnnotatedClass(Ticket.class)
                 .addAnnotatedClass(User.class);
         SESSION_FACTORY = configuration.buildSessionFactory();
-    }
-
-    public static String getOrDefault(String key, String fallback) {
-        String value = System.getenv(key);
-        return value == null || value.isBlank() ? fallback : value;
     }
 
     public static SessionFactory getSessionFactory() {
