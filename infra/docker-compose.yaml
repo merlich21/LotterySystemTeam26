@@ -8,8 +8,8 @@ services:
       - "8080:8080"
     environment:
       - DB_URL=jdbc:postgresql://hackathon_postgres:5432/lottery_db
-      - DB_USER_NAME=postgres
-      - DB_USER_PASSWORD=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
       - JWT_KEY=secretsecretsecretsecretsecretsecret
     networks:
       - hackathon_network
