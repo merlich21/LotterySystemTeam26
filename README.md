@@ -34,6 +34,7 @@ ___
 - DB_URL=jdbc:postgresql://hackathon_postgres:5432/lottery_db
 - DB_USER=postgres
 - DB_PASSWORD=postgres
+- JWT_KEY=secretsecretsecretsecretsecretsecret
 ````
 
 #### Для задания собственных настроек подключения к БД **НЕОБХОДИМО СОЗДАТЬ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ**:
@@ -41,6 +42,7 @@ ___
 - DB_URL=jdbc:postgresql://[HOST]:[PORT]/[DB_NAME]
 - DB_USER=[USERNAME]
 - DB_PASSWORD=[PASSWORD]
+- JWT_KEY=secretsecretsecretsecretsecretsecret 
 ```
 
 ### Сборка приложения:
