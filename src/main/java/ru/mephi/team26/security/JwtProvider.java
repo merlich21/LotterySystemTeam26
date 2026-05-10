@@ -10,8 +10,6 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-import static ru.mephi.team26.config.HibernateConfig.getOrDefault;
-
 public class JwtProvider {
     private final long duration;
     private final SecretKey key;
