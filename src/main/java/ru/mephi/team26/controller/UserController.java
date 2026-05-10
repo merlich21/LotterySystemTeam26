@@ -2,16 +2,14 @@ package ru.mephi.team26.controller;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import lombok.RequiredArgsConstructor;
 import ru.mephi.team26.dto.auth.AuthRequestDto;
 import ru.mephi.team26.dto.auth.AuthResponseDto;
 import ru.mephi.team26.service.UserService;
 
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     public void init(Javalin app) {
         app.post("/api/auth/register", this::register);

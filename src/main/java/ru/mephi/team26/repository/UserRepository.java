@@ -15,9 +15,8 @@ public class UserRepository {
         });
     }
 
-    // unused
-    public Optional<User> findById(Long id) {
-        return HibernateUtil.inTransaction(session -> Optional.ofNullable(session.get(User.class, id)));
+    public User findById(Long id) {
+        return HibernateUtil.inTransaction(session -> session.get(User.class, id));
     }
 
     public Optional<User> findByUsername(String username) {
@@ -25,6 +24,14 @@ public class UserRepository {
             Query<User> query = session.createQuery("FROM User WHERE username = :username", User.class);
             query.setParameter("username", username);
             return query.uniqueResultOptional();
+        });
+    }
+
+    public boolean existsByUsername(String username) {
+        return HibernateUtil.inTransaction(session -> {
+            Query<Long> query = session.createQuery("SELECT COUNT(u) FROM User u WHERE u.username = :username", Long.class);
+            query.setParameter("username", username);
+            return query.uniqueResult() > 0;
         });
     }
 }

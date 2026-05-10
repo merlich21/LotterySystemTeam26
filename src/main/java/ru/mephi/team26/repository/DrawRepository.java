@@ -1,12 +1,15 @@
 package ru.mephi.team26.repository;
 
+import io.javalin.http.BadRequestResponse;
+import io.javalin.http.NotFoundResponse;
 import org.hibernate.LockMode;
 import org.hibernate.query.Query;
 import ru.mephi.team26.entity.*;
-import ru.mephi.team26.exception.ApiException;
+import ru.mephi.team26.util.GeneratorUtil;
 import ru.mephi.team26.util.HibernateUtil;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,21 +34,22 @@ public class DrawRepository {
         });
     }
 
-    public void completeAndSettle(Long drawId, List<Integer> winningNumbers) {
-        HibernateUtil.inTransaction(session -> {
-            Draw draw = session.get(Draw.class, drawId, LockMode.PESSIMISTIC_WRITE);
-
+    public Draw completeById(Long id) {
+        return HibernateUtil.inTransaction(session -> {
+            Draw draw = session.get(Draw.class, id, LockMode.PESSIMISTIC_WRITE);
             if (draw == null) {
-                throw new ApiException(404, "Draw not found");
+                throw new NotFoundResponse("Draw with id " + id + " was not found");
             }
             if (draw.getStatus() != DrawStatus.ACTIVE) {
-                throw new ApiException(400, "Draw must be active");
+                throw new BadRequestResponse("Draw with id " + id + " is not active");
             }
+
+            List<Integer> winningNumbers = GeneratorUtil.generateWinningNumbers(draw);
 
             DrawResult drawResult = new DrawResult();
             drawResult.setDraw(draw);
             drawResult.setWinningNumbers(winningNumbers);
-            drawResult.setGeneratedAt(OffsetDateTime.now());
+            drawResult.setGeneratedAt(OffsetDateTime.now(ZoneOffset.UTC));
             session.persist(drawResult);
 
             draw.setStatus(DrawStatus.COMPLETED);
@@ -60,8 +64,7 @@ public class DrawRepository {
                 ticket.setStatus(status);
                 session.merge(ticket);
             }
-
-            return null;
+            return draw;
         });
     }
 }
