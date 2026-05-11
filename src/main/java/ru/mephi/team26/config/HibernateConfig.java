@@ -9,9 +9,8 @@ import ru.mephi.team26.entity.User;
 import ru.mephi.team26.util.EnvUtil;
 
 public class HibernateConfig {
-    private static final SessionFactory SESSION_FACTORY;
 
-    static {
+    public static SessionFactory buildSessionFactory() {
         Configuration configuration = new Configuration()
                 .setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
                 .setProperty("hibernate.connection.url", EnvUtil.getOrDefault("DB_URL", "jdbc:postgresql://localhost:5432/lottery_db"))
@@ -25,10 +24,6 @@ public class HibernateConfig {
                 .addAnnotatedClass(DrawResult.class)
                 .addAnnotatedClass(Ticket.class)
                 .addAnnotatedClass(User.class);
-        SESSION_FACTORY = configuration.buildSessionFactory();
-    }
-
-    public static SessionFactory getSessionFactory() {
-        return SESSION_FACTORY;
+        return configuration.buildSessionFactory();
     }
 }
