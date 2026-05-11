@@ -381,6 +381,50 @@ Error (404): Draw with id (drawId) was not found
 Error (409): Draw with id (drawId) is not completed yet
 ```
 
+#### `GET /api/draws/{drawId}/result`
+Получение результата тиража
+```
+Authorization: Bearer <TOKEN>
+
+Response (200):
+{
+  "drawId": 1,
+  "winningNumbers": [1, 7, 11, 23, 35],
+  "generatedAt": "2026-04-15T20:00:00Z"
+}
+
+Error (404): Draw with id (drawId) was not found
+Error (409): Draw with id (drawId) is not completed yet
+```
+
+### `GET /api/draws/{drawId}/tickets?status=WIN/LOSE/PENDING` (ADMIN only)
+Отображение статусов билетов (по тиражу) WIN, LOSE или PENDING
+```
+?status=LOSE
+
+Authorization: Bearer <ADMIN_TOKEN>
+
+Response (200):
+[
+    {
+      "id": 1,
+      "drawId": 1,
+      "userId": 3,
+      "numbers": [1, 7, 11, 23, 25],
+      "status": "LOSE",
+      "createdAt": "2026-05-09T19:30:00.0000000Z"
+    },
+    {
+      "id": 2,
+      "drawId": 1,
+      "userId": 3,
+      "numbers": [3, 8, 14, 17, 19],
+      "status": "LOSE",
+      "createdAt": "2026-05-09T19:35:00.0000000Z"
+    }
+]
+```
+
 ### 5.3 Управление билетами
 
 #### `POST /api/tickets` (USER only)
@@ -427,25 +471,8 @@ Response (200):
   "createdAt": "2026-05-09T19:30:00.0000000Z"
 }
 
-Error (403): You can only access your own ticket (USER only)
-Error (404): Ticket not found
-```
-
-### 5.4 Результаты тиража
-
-#### `GET /api/draws/{drawId}/result`
-```
-Authorization: Bearer <TOKEN>
-
-Response (200):
-{
-  "drawId": 1,
-  "winningNumbers": [1, 7, 11, 23, 35],
-  "generatedAt": "2026-04-15T20:00:00Z"
-}
-
-Error (404): Draw not found
-Error (409): Draw is not completed yet
+Error (403): Users can only access their own tickets (USER only)
+Error (404): Ticket with id (ticketId) was not found"
 ```
 
 ---
@@ -467,7 +494,6 @@ Error (409): Draw is not completed yet
                             ↓
               ┌─────────────────────────────┐
               │   ADMIN нажимает COMPLETE   │
-              │  (POST /draws/{id}/complete)│
               └─────────────┬───────────────┘
                             ↓
         ┌─────────────────────────────────────────┐
@@ -526,10 +552,10 @@ Error (409): Draw is not completed yet
 - Все числа ∈ [1, maxNumber]
 
 **Авторизация**:
-- Все эндпоинты кроме `/auth/*` требуют Bearer токен
-- `/api/draws` требует ADMIN
-- `/api/tickets` требует USER
-- USER может видеть только свои билеты (кроме ADMIN)
+- Все эндпоинты кроме `/api/auth/*` требуют Bearer токен
+- `POST /api/draws`, `POST /api/draws/{drawId}/complete`, `GET /api/draws/{drawId}/tickets` требует ADMIN
+- `POST /api/tickets` требует USER
+- USER может видеть только свои билеты, ADMIN может смотреть все
 
 ---
 
@@ -538,66 +564,74 @@ Error (409): Draw is not completed yet
 ### Сценарий 1: Happy Path
 
 ```
-1. Регистрируем ADMIN-а
-   POST /api/auth/register → {username: "admin", password: "admin123"}
+1. Логинимся как ADMIN (уже создан при запуске приложения)
+   POST /api/auth/login  { "username": "admin", "password": "admin123" }
+   -> Получаем jwt_admin (на 1 час)
 
-2. Логинимся как ADMIN
-   POST /api/auth/login → получаем token_admin
+2. Создаём тираж (Authorization: Bearer <jwt_admin>)
+   POST /api/draws  { "title": "First Draw", "numbersCount": 5, "maxNumber": 30 }
+   → Создаём Draw с id = 1, status = ACTIVE
 
-3. Создаём тираж
-   POST /api/draws → title: "Weekly", numbersCount: 5, maxNumber: 36
-   → Draw id = 1, status = ACTIVE
+3. Регистрируем USER
+   POST /api/auth/register  { "username": "user1", "password": "123456" }
+   -> Получаем jwt_user (на 1 час, даётся сразу при регистрации, можно дополнительно не логиниться) 
 
-4. Регистрируем USER-а
-   POST /api/auth/register → {username: "user1", password: "user123"}
+4. Покупаем билет (Authorization: Bearer <jwt_user>)
+   POST /api/tickets  { "drawId": 1, "numbers": [1, 7, 11, 23, 25] }
+   → Создаём Ticket с id = 1, status = PENDING
 
-5. Логинимся как USER
-   POST /api/auth/login → получаем token_user
-
-6. Покупаем билет
-   POST /api/tickets → drawId: 1, numbers: [1,7,11,23,35]
-   → Ticket id = 1, status = PENDING
-
-7. Завершаем тираж (ADMIN)
+5. Завершаем тираж (Authorization: Bearer <jwt_admin>)
    POST /api/draws/1/complete
-   → Генерируется winning_numbers, все tickets переходят в WIN/LOSE
+   → Генерируется winning_numbers, все статусы билетов переходят в WIN/LOSE
 
-8. Проверяем результат
-   GET /api/tickets/1/result → result: "WIN" или "LOSE"
+6. Проверяем результат (Authorization: Bearer <jwt_user>)
+   GET /api/tickets/1/result 
+   → Получаем Ticket со status = WIN/LOSE
+   
+7. Отображаем билеты по тиражу со статусом LOSE (Authorization: Bearer <jwt_admin>)
+    GET /api/draws/1/tickets?status=LOSE 
+    → Получаем список Ticket с draw_id = 1 и status = LOSE
 ```
 
 ### Сценарий 2: Ошибки авторизации
 
 ```
-1. Попытка создать draw без токена
-   POST /api/draws → 401 Unauthorized
+1. Попытка создать draw без токена/без заголовка Authorization
+   POST /api/draws  { ... }
+    → 401 Unauthorized
 
-2. Попытка создать draw с USER токеном
-   POST /api/draws (token: token_user) → 403 Forbidden
+2. Попытка создать draw с USER токеном (Authorization: Bearer <jwt_user>)
+   POST /api/draws  { ... }
+    → 403 Forbidden
 
-3. Попытка купить билет с ADMIN токеном
-   POST /api/tickets (token: token_admin) → 403 Forbidden
+3. Попытка купить билет с ADMIN токеном (Authorization: Bearer <jwt_admin>)
+   POST /api/tickets  { ... }
+   → 403 Forbidden
 
-4. Попытка доступа к чужому билету
-   GET /api/tickets/2/result (token: token_user, но ticket.user_id ≠ user_id)
+4. Попытка доступа к чужому билету (Authorization: Bearer <jwt_user>)
+   GET /api/tickets/2/result (ticket.user_id ≠ user_id)
    → 403 Forbidden
 ```
 
 ### Сценарий 3: Граничные случаи
 
 ```
-1. Попытка создать тираж с invalid параметрами
-   POST /api/draws → numbersCount: 100 → 400 Bad Request
+1. Попытка создать тираж с невалидными параметрами (Authorization: Bearer <jwt_admin>)
+   POST /api/draws  { "title": "First Draw", "numbersCount": 100, maxNumber: 30 }
+   → 400 Bad Request
 
-2. Попытка купить билет с дублирующимися числами
-   POST /api/tickets → numbers: [1,1,7,11,23] → 400 Bad Request
+2. Попытка купить билет с дублирующимися числами (Authorization: Bearer <jwt_user>)
+   POST /api/tickets { "drawId": 1, "numbers": [1, 7, 7, 23, 25] }
+   → 400 Bad Request
+   
+3. Попытка завершить уже завершённый тираж (Authorization: Bearer <jwt_admin>)
+   POST /api/draws/1/complete (второй раз)
+    → 409 Conflict
 
-3. Попытка купить билет для завершённого тиража
-   POST /api/tickets (drawId: завершённый) → 409 Conflict
+3. Попытка купить билет для завершённого тиража (Authorization: Bearer <jwt_user>)
+   POST /api/tickets { "drawId" 1: , "numbers": [1, 7, 7, 23, 25] }
+    → 409 Conflict
 
-4. Попытка завершить уже завершённый тираж
-   POST /api/draws/1/complete (второй раз) → 409 Conflict
 ```
 
 ---
-
