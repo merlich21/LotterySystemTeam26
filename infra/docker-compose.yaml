@@ -29,7 +29,6 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=lottery_db
       - PGPORT=5432
-      - JWT_KEY=secretsecretsecretsecretsecretsecret
     networks:
       - hackathon_network
     volumes:
