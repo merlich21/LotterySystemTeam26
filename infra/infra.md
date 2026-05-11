@@ -16,7 +16,7 @@
 - docker build -t hackathon_java -f .\infra\java-dockerfile .
 - docker run --name hackathon_java -p 8080:8080 -e DB_URL=jdbc:postgresql://hackathon_postgres:5432/lottery_db -e DB_USER_NAME=postgres -e DB_USER_PASSWORD=postgres --network hackathon_network -d hackathon_java
 
-## Как запустить приложение целиком?
+## Как запустить приложение целиком (предыдущие шаги необязательны)?
 - Первый раз:
 - docker compose -f infra/docker-compose.yaml up -d --build
 - Без пересборки:
