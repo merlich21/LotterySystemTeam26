@@ -3,7 +3,7 @@
 #### **Участник 1 (Архитектор / Lead Backend)**
 - Дизайн архитектуры слоёв
 - Настройка проекта (Maven, структура пакетов)
-- Настройка окружения (конфиг, Database, Flyway)
+- Настройка окружения (конфиг, Database)
 - Интеграция компонентов
 - Code Review
 
@@ -11,7 +11,6 @@
 - `pom.xml`
 - `Application.java`
 - `config/*`
-- `exception/*`
 
 **Время**: 4-6 часов
 
@@ -26,6 +25,7 @@
 
 **Файлы**:
 - `controller/*`
+- `exception/*`
 - `security/*`
 - `dto/*`
 
@@ -37,13 +37,12 @@
 - Бизнес-логика сервисов
 - Статусы и переходы состояний
 - Алгоритмы генерации и сравнения чисел
-- Unit-тесты логики
 
 **Файлы**:
+- `mapper/*`
 - `service/*`
 - `util/*`
 - `validator/*`
-- `AppTest.java`
 
 **Время**: 6-8 часов
 
@@ -51,7 +50,7 @@
 
 #### **Участник 4 (Database разработчик)**
 - Проектирование схемы БД
-- Миграции (Flyway)
+- SQL-скрипт создания таблиц
 - JDBC Repository слой
 - Работа с транзакциями (settlement)
 - Тестирование на БД
@@ -59,8 +58,7 @@
 **Файлы**:
 - `repository/*`
 - `entity/*`
-- `mapper/*`
-- `resources/db.migration/V1__init_schema.sql`
+- `resources/schema.sql`
 
 **Время**: 6-8 часов
 
@@ -74,12 +72,11 @@
 - Инструкции по развёртыванию
 
 **Файлы**:
-- `infra/*`
-- `Dockerfile`
-- `docker-compose.yml`
-- `resources/hibernate.cfg.xml`
-- `README.md`
-- `.env_example`
+- `infra/infra.md`
+- `infra/run-db.*`
+- `infra/db-dockerfile`
+- `infra/java-dockerfile`
+- `infra/docker-compose.yaml`
 
 **Время**: 3-4 часа
 
@@ -92,12 +89,11 @@
 **Цель**: Подготовить базовую структуру и окружение
 
 **Задачи**:
-- [ ] Создать структуру папок (`src/main/java/org/example/*`)
-- [ ] Настроить `pom.xml` с зависимостями (Javalin, PostgreSQL, Flyway, HikariCP)
+- [ ] Создать структуру папок (`src/main/java/ru/mephi/team26/*`)
+- [ ] Настроить `pom.xml` с зависимостями (Javalin, PostgreSQL)
 - [ ] Добавить плагины (maven-compiler, maven-shade, exec-maven)
 - [ ] Создать `AppConfig` для управления окружением
 - [ ] Создать `Database` для управления пулом соединений
-- [ ] Создать `ApiException` для единообразной обработки ошибок
 - [ ] Инициализировать `Application.main()` как entry point
 
 **Ответственный**: Участник 1
@@ -113,9 +109,8 @@
 **Задачи**:
 - [ ] Создать domain records: `User`, `Draw`, `Ticket`, `DrawResult`
 - [ ] Создать enums: `Role`, `DrawStatus`, `TicketStatus`
-- [ ] Создать `V1__init_schema.sql` с таблицами
+- [ ] Создать `schema.sql` с таблицами
 - [ ] Добавить индексы на часто используемые колонки
-- [ ] Создать `NumberCodec` для кодирования списков чисел
 
 **Ответственный**: Участник 4
 
@@ -128,10 +123,11 @@
 **Цель**: Реализовать JDBC доступ к БД
 
 **Задачи**:
-- [ ] `JdbcUserRepository`: CRUD для users, поиск по username
-- [ ] `JdbcDrawRepository`: CRUD для draws, поиск активных, settlement
-- [ ] `JdbcTicketRepository`: CRUD для tickets, поиск по draw
-- [ ] Реализовать транзакцию в `completeAndSettle()` для консистентности
+- [ ] `UserRepository`: create/read для users, поиск по username
+- [ ] `DrawRepository`: create/read для draws, поиск активных, settlement
+- [ ] `DrawResultRepository`: поиск по drawId
+- [ ] `TicketRepository`: create/read для tickets, поиск по draw и status
+- [ ] Реализовать транзакцию в `completeById()` для консистентности
 
 **Ответственный**: Участник 4
 
@@ -195,8 +191,8 @@
 **Цель**: Подготовить к production-like запуску
 
 **Задачи**:
-- [ ] Написать `Dockerfile` (multi-stage build)
-- [ ] Написать `docker-compose.yml` (app + postgres)
+- [ ] Написать `db-dockerfile` и `java-dockerfile` (multi-stage build)
+- [ ] Написать `docker-compose.yaml` (app + postgres)
 - [ ] Написать подробный `README.md`:
     - Архитектура
     - Локальный запуск
@@ -204,12 +200,12 @@
     - API примеры
     - Статусы и переходы
     - Распределение ролей
-- [ ] Создать `.env.example`
-- [ ] Создать SQL дамп схемы
+- [ ] Создать `.env_example`
+- [ ] Добавить запуск SQL-скрипта `schema.sql` создания всех таблиц в контейнере
 
 **Ответственный**: Участник 5 (опционально, можно участник 1)
 
-**Проверка**: `docker compose up --build` запускает приложение и БД
+**Проверка**: `docker compose -f infra/docker-compose.yaml up -d --build` запускает приложение и БД
 
 ---
 

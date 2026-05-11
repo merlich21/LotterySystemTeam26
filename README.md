@@ -108,7 +108,7 @@ API будет доступно на `http://localhost:8080`.
 ````
 
 
-### Как запустить приложение целиком:
+### Как запустить приложение целиком (предыдущие шаги необязательны):
 - #### В первый раз:
 ```shell
     docker compose -f infra/docker-compose.yaml up -d --build
@@ -165,8 +165,7 @@ API будет доступно на `http://localhost:8080`.
 │  - users,                           │
 │  - draws,                           │
 │  - tickets,                         │
-│  - draw_results,                    │
-│                                     │
+│  - draw_results                     │
 └─────────────────────────────────────┘
 ```
 
@@ -175,12 +174,10 @@ API будет доступно на `http://localhost:8080`.
 
 - **Язык**: Java 17 (JDK)
 - **Build**: Maven 3.9.9, Maven-wrapper-3.3.4
-- **REST API**: Javalin 6.1.3 (без Spring)
-- **БД**: PostgreSQL 18.3
-- **ORM Framework**: Hibernate
-- **Вспомогательные Frameworks**: Jakarta, Lombok
-- **Логирование**: SLF4J + Logback
-- **Тестирование**: JUnit 5
+- **REST API фреймворк**: Javalin 6.1.3 (без Spring)
+- **ORM фреймворк**: Hibernate
+- **Вспомогательные библиотеки**: Lombok, Jsonwebtoken
+- **СУБД**: PostgreSQL 18.3
 - **Контейнеризация**: Docker + Docker Compose
 
 ---
@@ -268,25 +265,32 @@ CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id);
 ### 5.1 Аутентификация
 
 #### `POST /api/auth/register`
+Регистрация пользователя
 ```
+Content-Type: application/json
+
 Request:
 {
-  "username": "student1",
-  "password": "pass1234"
+  "username": "user1",
+  "password": "user123"
 }
 
 Response (201):
 {
-  "id": 1,
-  "username": "student1",
+  "id": 3,
+  "username": "user1",
   "role": "USER"
+  "jwt": "eyJhbGciOiJIUzI1NiJ9..."
 }
 
-Error (409): Username already exists
+Error (409): User with that username already exists
 ```
 
 #### `POST /api/auth/login`
+Авторизация пользователя/администратора
 ```
+Content-Type: application/json
+
 Request:
 {
   "username": "admin",
@@ -295,76 +299,77 @@ Request:
 
 Response (200):
 {
-  "token": "uuid-string",
-  "userId": 1,
+  "id": 1,
   "username": "admin",
   "role": "ADMIN"
+  "jwt": "eyJhbGciOiJIUzI1NiJ9..."
 }
 
 Error (401): Invalid credentials
 ```
 
-### 5.2 Управление тиражами (ADMIN)
+### 5.2 Управление тиражами
 
 #### `POST /api/draws` (ADMIN only)
+Создание тиража
 ```
 Authorization: Bearer <ADMIN_TOKEN>
+Content-Type: application/json
 
 Request:
 {
-  "title": "Weekly Draw",
+  "title": "First Draw",
   "numbersCount": 5,
-  "maxNumber": 36
+  "maxNumber": 30
 }
 
 Response (201):
 {
   "id": 1,
-  "title": "Weekly Draw",
+  "title": "First Draw",
   "status": "ACTIVE",
   "numbersCount": 5,
-  "maxNumber": 36,
-  "createdBy": 1,
-  "createdAt": "2026-04-15T19:00:00Z"
+  "maxNumber": 30,
+  "createdAt": "2026-05-09T19:00:00.0000000Z"
 }
 
-Error (400): Invalid draw parameters
-Error (403): Insufficient permissions (not ADMIN)
+Error (400): Title is required
+Error (400): Numbers count must be in range [3..10]
+Error (400): Max number must be in range [10..99]
+Error (400): Numbers count must be less than max number
 ```
 
 #### `GET /api/draws/active`
+Получение списка активных тиражей
 ```
 Authorization: Bearer <TOKEN>
 
 Response (200):
-{
-  "items": [
+[
     {
       "id": 1,
-      "title": "Weekly Draw",
+      "title": "First Draw",
       "status": "ACTIVE",
       "numbersCount": 5,
-      "maxNumber": 36,
-      "createdBy": 1,
-      "createdAt": "2026-04-15T19:00:00Z"
+      "maxNumber": 30,
+      "createdAt": "2026-05-09T19:00:00.0000000Z"
     }
-  ]
-}
+]
 ```
 
 #### `POST /api/draws/{drawId}/complete` (ADMIN only)
+Завершение тиража и генерация выигрышной комбинации
 ```
 Authorization: Bearer <ADMIN_TOKEN>
 
 Response (200):
 {
   "id": 1,
-  "title": "Weekly Draw",
+  "title": "First Draw",
   "status": "COMPLETED",
   "numbersCount": 5,
-  "maxNumber": 36,
-  "createdBy": 1,
-  "createdAt": "2026-04-15T19:00:00Z"
+  "maxNumber": 30,
+  "createdAt": "2026-05-09T19:00:00.0000000Z"
 }
 
 Внутри:
@@ -372,51 +377,57 @@ Response (200):
 - Обновляются статусы всех билетов (WIN/LOSE)
 - Используется транзакция для консистентности
 
-Error (404): Draw not found
-Error (409): Draw is already completed
+Error (404): Draw with id (drawId) was not found
+Error (409): Draw with id (drawId) is not completed yet
 ```
 
-### 5.3 Управление билетами (USER)
+### 5.3 Управление билетами
 
 #### `POST /api/tickets` (USER only)
+Создание билета
 ```
 Authorization: Bearer <USER_TOKEN>
+Content-Type: application/json
 
 Request:
 {
   "drawId": 1,
-  "numbers": [1, 7, 11, 23, 35]
+  "numbers": [1, 7, 11, 23, 25]
 }
 
 Response (201):
 {
   "id": 1,
   "drawId": 1,
-  "userId": 2,
-  "numbers": [1, 7, 11, 23, 35],
+  "userId": 3,
+  "numbers": [1, 7, 11, 23, 25],
   "status": "PENDING",
-  "createdAt": "2026-04-15T19:30:00Z"
+  "createdAt": "2026-05-09T19:30:00.0000000Z"
 }
 
-Error (400): Duplicate numbers, invalid range
-Error (404): Draw not found
-Error (409): Draw is not active
+Error (400): Numbers count must be exactly (draw.numbers_count)
+Error (400): Each number must be between 1 and (draw.max_number)
+Error (400): Numbers count must be less than max number
+Error (404): Draw with id (drawId) was not found
+Error (409): Draw with id (drawId) is already completed. Tickets can only be created for an active draw
 ```
 
 #### `GET /api/tickets/{ticketId}/result`
+Проверка результата билета
 ```
-Authorization: Bearer <USER_TOKEN>
+Authorization: Bearer <TOKEN>
 
 Response (200):
 {
-  "ticketId": 1,
+  "id": 1,
   "drawId": 1,
-  "userId": 2,
-  "numbers": [1, 7, 11, 23, 35],
-  "result": "WIN"  // WIN | LOSE | DRAW_NOT_COMPLETED
+  "userId": 3,
+  "numbers": [1, 7, 11, 23, 25],
+  "status": "PENDING",
+  "createdAt": "2026-05-09T19:30:00.0000000Z"
 }
 
-Error (403): You can only access your own ticket (non-ADMIN)
+Error (403): You can only access your own ticket (USER only)
 Error (404): Ticket not found
 ```
 
@@ -435,16 +446,6 @@ Response (200):
 
 Error (404): Draw not found
 Error (409): Draw is not completed yet
-```
-
-### 5.5 Health Check
-
-#### `GET /api/health`
-```
-Response (200):
-{
-  "status": "ok"
-}
 ```
 
 ---
@@ -525,7 +526,7 @@ Response (200):
 - Все числа ∈ [1, maxNumber]
 
 **Авторизация**:
-- Все эндпоинты кроме `/auth/*` и `/health` требуют Bearer токен
+- Все эндпоинты кроме `/auth/*` требуют Bearer токен
 - `/api/draws` требует ADMIN
 - `/api/tickets` требует USER
 - USER может видеть только свои билеты (кроме ADMIN)
