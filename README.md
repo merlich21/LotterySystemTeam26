@@ -397,7 +397,7 @@ Error (404): Draw with id (drawId) was not found
 Error (409): Draw with id (drawId) is not completed yet
 ```
 
-### `GET /api/draws/{drawId}/tickets?status=WIN/LOSE/PENDING` (ADMIN only)
+#### `GET /api/draws/{drawId}/tickets?status=WIN/LOSE/PENDING` (ADMIN only)
 Отображение статусов билетов (по тиражу) WIN, LOSE или PENDING
 ```
 ?status=LOSE
@@ -597,15 +597,15 @@ Error (404): Ticket with id (ticketId) was not found"
 
 ```
 1. Попытка создать draw без токена/без заголовка Authorization
-   POST /api/draws  { ... }
+   POST /api/draws  { "title": "First Draw", "numbersCount": 5, "maxNumber": 30 }
     → 401 Unauthorized
 
 2. Попытка создать draw с USER токеном (Authorization: Bearer <jwt_user>)
-   POST /api/draws  { ... }
+   POST /api/draws  { "title": "First Draw", "numbersCount": 5, "maxNumber": 30 }
     → 403 Forbidden
 
 3. Попытка купить билет с ADMIN токеном (Authorization: Bearer <jwt_admin>)
-   POST /api/tickets  { ... }
+   POST /api/tickets  { "drawId": 1, "numbers": [1, 7, 11, 23, 25] }
    → 403 Forbidden
 
 4. Попытка доступа к чужому билету (Authorization: Bearer <jwt_user>)
