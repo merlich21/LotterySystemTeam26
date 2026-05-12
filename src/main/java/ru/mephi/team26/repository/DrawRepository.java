@@ -1,6 +1,6 @@
 package ru.mephi.team26.repository;
 
-import io.javalin.http.BadRequestResponse;
+import io.javalin.http.ConflictResponse;
 import io.javalin.http.NotFoundResponse;
 import org.hibernate.LockMode;
 import org.hibernate.query.Query;
@@ -41,7 +41,7 @@ public class DrawRepository {
                 throw new NotFoundResponse("Draw with id " + id + " was not found");
             }
             if (draw.getStatus() != DrawStatus.ACTIVE) {
-                throw new BadRequestResponse("Draw with id " + id + " is not active");
+                throw new ConflictResponse("Draw with id " + id + " is not active");
             }
 
             List<Integer> winningNumbers = GeneratorUtil.generateWinningNumbers(draw);

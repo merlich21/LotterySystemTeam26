@@ -30,21 +30,22 @@ public class JwtFilter {
             throw new UnauthorizedResponse("Missing JWT");
         }
 
+        String jwt = authHeader.replace("Bearer ", "");
+        Claims claims;
         try {
-            String jwt = authHeader.replace("Bearer ", "");
-            Claims claims = jwtProvider.parseToken(jwt);
-
-            ctx.attribute("username", claims.getSubject());
-            ctx.attribute("userId", claims.get("userId", Long.class));
-
-            String role = claims.get("role", String.class);
-            ctx.attribute("role", role);
-
-            if (!permittedRoles.contains(Role.valueOf(role))) {
-                throw new ForbiddenResponse("Insufficient permissions");
-            }
+            claims = jwtProvider.parseToken(jwt);
         } catch (Exception e) {
             throw new UnauthorizedResponse("Invalid JWT: " + e.getMessage());
+        }
+
+        ctx.attribute("username", claims.getSubject());
+        ctx.attribute("userId", claims.get("userId", Long.class));
+
+        String role = claims.get("role", String.class);
+        ctx.attribute("role", role);
+
+        if (!permittedRoles.contains(Role.valueOf(role))) {
+            throw new ForbiddenResponse("Insufficient permissions");
         }
     }
 }
