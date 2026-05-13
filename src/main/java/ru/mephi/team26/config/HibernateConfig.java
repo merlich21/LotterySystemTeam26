@@ -17,7 +17,7 @@ public class HibernateConfig {
                 .setProperty("hibernate.connection.username", EnvUtil.getOrDefault("DB_USER", "postgres"))
                 .setProperty("hibernate.connection.password", EnvUtil.getOrDefault("DB_PASSWORD", "postgres"))
                 .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
-                .setProperty("hibernate.hbm2ddl.auto", "validate")
+                .setProperty("hibernate.hbm2ddl.auto", "update")
                 .setProperty("hibernate.show_sql", "true")
                 .setProperty("hibernate.physical_naming_strategy", "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy")
                 .addAnnotatedClass(Draw.class)
